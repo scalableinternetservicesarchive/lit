@@ -1,3 +1,12 @@
+# DEVELOPERS
+
+* Amy Zhao ![Image of Amy Zhao](https://octodex.github.com/images/yaktocat.png)
+* David Macaraeg ![Image of David Macaraeg](https://octodex.github.com/images/yaktocat.png)
+* Haiwei Lu ![Image of Haiwei Lu](https://octodex.github.com/images/yaktocat.png)
+* Lila Rungcharoenporn ![Image of Lila Rungcharoenporn](https://octodex.github.com/images/yaktocat.png)
+
+
+
 # bespin
 
 Welcome to Cloud City!
