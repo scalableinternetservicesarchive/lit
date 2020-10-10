@@ -1,9 +1,9 @@
 # DEVELOPERS
 
-* Amy Zhao ![Image of Amy Zhao](https://octodex.github.com/images/yaktocat.png)
-* David Macaraeg ![Image of David Macaraeg](https://octodex.github.com/images/yaktocat.png)
-* Haiwei Lu ![Image of Haiwei Lu](https://octodex.github.com/images/yaktocat.png)
-* Lila Rungcharoenporn ![Image of Lila Rungcharoenporn](https://octodex.github.com/images/yaktocat.png)
+* Amy Zhao ![Image of Amy Zhao](https://www.facebook.com/photo?fbid=2131036933797461&set=a.1397131467188015=250x250)
+* David Macaraeg ![Image of David Macaraeg](https://www.facebook.com/photo/?fbid=1509746762517440&set=a.105487982943332=250x250)
+* Haiwei Lu ![Image of Haiwei Lu](https://octodex.github.com/images/yaktocat.png=250x250)
+* Lila Rungcharoenporn ![Image of Lila Rungcharoenporn](https://octodex.github.com/images/yaktocat.png=250x250)
 
 
 
