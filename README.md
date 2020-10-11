@@ -1,6 +1,6 @@
 # DEVELOPERS
 
-* Amy Zhao <img src="https://www.facebook.com/photo?fbid=2131036933797461&set=a.1397131467188015" height="200" width="200">
+* Amy Zhao <img src="https://avatars3.githubusercontent.com/u/31675829?s=460&u=0589cf1259fad53c907288efddb984186753a1ad&v=4" height="200" width="200">
 * David Macaraeg <img src="https://www.facebook.com/photo/?fbid=1509746762517440&set=a.105487982943332" height="200" width="200">
 * Haiwei Lu <img src="https://octodex.github.com/images/yaktocat.png" height="200" width="200">
 * Lila Rungcharoenporn <img src="https://octodex.github.com/images/yaktocat.png" height="200" width="200">
