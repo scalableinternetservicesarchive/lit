@@ -1,11 +1,9 @@
 # DEVELOPERS
 
-* Amy Zhao <img src="./team-member-pics/amy.jpg" height="200" width="200">
-* David Macaraeg <img src="./team-member-pics/david.jpg" height="200" width="200">
-* Haiwei Lu <img src="./team-member-pics/haiwei.jpeg" height="200" width="200">
-* Lila Rungcharoenporn <img src="./team-member-pics/lila.jpeg" height="200" width="200">
-
-
+* Amy Zhao <img src="./team-member-pics/amy.jpg" height= width="100">
+* David Macaraeg <img src="./team-member-pics/david.jpeg" height="100" width="100">
+* Haiwei Lu <img src="./team-member-pics/haiwei.jpeg" height="100" width="100">
+* Lila Rungcharoenporn <img src="./team-member-pics/lila.jpeg" height="100" width="100">
 
 # bespin
 
