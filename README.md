@@ -1,6 +1,6 @@
 # DEVELOPERS
 
-* Amy Zhao <img src="./team-member-pics/amy.jpg" height= width="100">
+* Amy Zhao <img src="./team-member-pics/amy.jpg" height="100" width="100">
 * David Macaraeg <img src="./team-member-pics/david.jpeg" height="100" width="100">
 * Haiwei Lu <img src="./team-member-pics/haiwei.jpeg" height="100" width="100">
 * Lila Rungcharoenporn <img src="./team-member-pics/lila.jpeg" height="100" width="100">
