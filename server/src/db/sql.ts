@@ -5,6 +5,7 @@ import { Survey } from '../entities/Survey'
 import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 import { User } from '../entities/User'
+import { Work } from '../entities/Work'
 
 const baseConfig = {
   host: process.env.MYSQL_HOST || '127.0.0.1',
@@ -20,7 +21,7 @@ export async function initORM() {
     username: process.env.MYSQL_USER || 'root',
     synchronize: true,
     logging: false,
-    entities: [User, Session, Survey, SurveyQuestion, SurveyAnswer],
+    entities: [User, Session, Survey, SurveyQuestion, SurveyAnswer, Work],
     extra: {
       connectionLimit: 5,
     },

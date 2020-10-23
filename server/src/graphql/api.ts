@@ -6,6 +6,7 @@ import { Survey } from '../entities/Survey'
 import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 import { User } from '../entities/User'
+import { Work } from '../entities/Work'
 import { Resolvers } from './schema.types'
 
 export const pubsub = new PubSub()
@@ -27,6 +28,8 @@ export const graphqlRoot: Resolvers<Context> = {
     self: (_, args, ctx) => ctx.user,
     survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
     surveys: () => Survey.find(),
+    user: async (_, { userID }) => (await User.findOne({ where: { id: userID } })) || null,
+    work: async (_, { workID }) => (await Work.findOne({ where: { id: workID } })) || null,
   },
   Mutation: {
     answerSurvey: async (_, { input }, ctx) => {

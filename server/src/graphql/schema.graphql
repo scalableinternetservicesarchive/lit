@@ -12,23 +12,73 @@
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
 
 type User {
   id: Int!
-  username: String!
+  userType: UserType!
+  name: String!
+  # username: String!
   email: String
-  worksPublished: [Work!]!
+  # worksPublished: [Work!]!
+}
+
+enum UserType { ADMIN, USER }
+type Survey {
+  id: Int!
+
+  # Pretty name for the survey.
+  name: String!
+
+  # True if the survey has started.
+  isStarted: Boolean!
+
+  # True if the survey has completed.
+  isCompleted: Boolean!
+
+  # The current survey question, or null if the survey hasn't started.
+  currentQuestion: SurveyQuestion
+
+  # All the survey's questions, in presentation order.
+  questions: [SurveyQuestion]!
+}
+
+type SurveyQuestion {
+  id: Int!
+
+  # The prompt, e.g. "how long have you been programming".
+  prompt: String!
+
+  # The choices available if multiple choice, null if not multiple choice.
+  choices: [String!]
+
+  # All answers received so far for the question.
+  answers: [SurveyAnswer!]!
+
+  # The Survey that this question is on.
+  survey: Survey!
+}
+
+type SurveyAnswer {
+  id: Int!
+  answer: String!
+  question: SurveyQuestion!
+}
+
+input SurveyInput {
+  questionId: Int!
+  answer: String!
 }
 
 type Work {
   id: Int!
-  user: User!
+  userID: Int!
   title: String!
   summary: String!
   dateCreated: String!
   dateModified: String!
-  chapters: [Chapter]!
+  # chapters: [Chapter]!
 }
 
 type Chapter {
@@ -39,10 +89,11 @@ type Chapter {
 }
 
 type Query {
+  # Returns the logged-in user making the query, or null if anonymous.
   self: User
 
   users: [User!]!
-  works: [Work!]!
+  # works: [Work!]!
 
   work(workID: Int!): Work
   user(userID: Int!): User
@@ -50,34 +101,28 @@ type Query {
   # work(workTitle: String!): Work
   # user(userName: String!): User
   # chapter(workTitle: String!, chapterTitle: Int!): Chapter
+  surveys: [Survey!]!
+  survey (surveyId: Int!): Survey
+
+}
+
+type Subscription {
+  surveyUpdates (surveyId: Int!): Survey
+}
+
+type Mutation {
+  # addWork(title: String!, user: User!): Work
+  # Records an answer to a survey question presented in class.
+  answerSurvey (input: SurveyInput!): Boolean!
+
+  # Moves the survey to the next question (or starts it if it hasn't started). ADMIN only.
+  nextSurveyQuestion (surveyId: Int!): Survey
 }
 
 
-# schema {
-#   query: Query
-#   mutation: Mutation
-#   subscription: Subscription
-# }
 
-# type Query {
-#   # Returns the logged-in user making the query, or null if anonymous.
-#   self: User
 
-#   surveys: [Survey!]!
-#   survey (surveyId: Int!): Survey
-# }
 
-# type Mutation {
-#   # Records an answer to a survey question presented in class.
-#   answerSurvey (input: SurveyInput!): Boolean!
-
-#   # Moves the survey to the next question (or starts it if it hasn't started). ADMIN only.
-#   nextSurveyQuestion (surveyId: Int!): Survey
-# }
-
-# type Subscription {
-#   surveyUpdates (surveyId: Int!): Survey
-# }
 
 # type User {
 #   id: Int!

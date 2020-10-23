@@ -29,4 +29,13 @@ export class User extends BaseEntity implements GraphqlUser {
     nullable: true,
   })
   name: string
+
+  // @OneToMany(() => worksPublished, question => question.survey, { eager: true })
+  // questions: SurveyQuestion[]
+
+  // @Column({
+
+  // })
+  // worksPublished: [Work!]!
+
 }
