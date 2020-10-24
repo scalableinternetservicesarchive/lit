@@ -2,7 +2,7 @@ import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 // import { User as GraphqlUser, UserType } from '../graphql/schema.types'
 
 @Entity()
-export class Work extends BaseEntity {
+export class Chapter extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -11,7 +11,13 @@ export class Work extends BaseEntity {
 
   // @UpdateDateColumn()
   // timeUpdated: Date
-  @Column({ nullable: true })
+  @Column({ nullable: false })
+  workID: number
+
+  @Column({ nullable: false })
+  chapterID: number
+
+  @Column({ nullable: false })
   userID: number
 
   @Column({
@@ -22,19 +28,17 @@ export class Work extends BaseEntity {
   @Column({
     length: 100,
   })
-  summary: string
+  text: string
 
   @Column({
     length: 100,
   })
   dateCreated: string
+
   @Column({
     length: 100,
   })
   dateModified: string
 
-  @Column({ nullable: false })
-  chapterCurrMaxID: number
 
-  // chapters: [Chapter]!
 }
