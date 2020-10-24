@@ -1,4 +1,3 @@
-
 insert into `survey_question` (`surveyId`, `prompt`, `choices`) values (1, '🧐 How are you doing today?', '🤗,🙂,🙃,😴,😎,😳,😰');
 insert into `survey_question` (`surveyId`, `prompt`, `choices`) values (1, '😴 Is 8am too early for lecture?', 'yes,no');
 insert into `survey_question` (`surveyId`, `prompt`) values (1, '🌎 Where are you on the map?');
