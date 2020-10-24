@@ -25,6 +25,80 @@ export enum UserType {
   User = 'USER',
 }
 
+export interface Work {
+  __typename?: 'Work'
+  id: Scalars['Int']
+  userID: Scalars['Int']
+  title: Scalars['String']
+  summary: Scalars['String']
+  dateCreated: Scalars['String']
+  dateModified: Scalars['String']
+  chapterCurrMaxID: Scalars['Int']
+}
+
+export interface Chapter {
+  __typename?: 'Chapter'
+  id: Scalars['Int']
+  workID: Scalars['Int']
+  chapterID: Scalars['Int']
+  userID: Scalars['Int']
+  title: Scalars['String']
+  text: Scalars['String']
+  dateCreated: Scalars['String']
+  dateModified: Scalars['String']
+}
+
+export interface Query {
+  __typename?: 'Query'
+  self?: Maybe<User>
+  users: Array<User>
+  work?: Maybe<Work>
+  user?: Maybe<User>
+  chapter?: Maybe<Chapter>
+  surveys: Array<Survey>
+  survey?: Maybe<Survey>
+}
+
+export interface QueryWorkArgs {
+  workID: Scalars['Int']
+}
+
+export interface QueryUserArgs {
+  userID: Scalars['Int']
+}
+
+export interface QueryChapterArgs {
+  wrkID: Scalars['Int']
+  chID: Scalars['Int']
+}
+
+export interface QuerySurveyArgs {
+  surveyId: Scalars['Int']
+}
+
+export interface Mutation {
+  __typename?: 'Mutation'
+  answerSurvey: Scalars['Boolean']
+  nextSurveyQuestion?: Maybe<Survey>
+}
+
+export interface MutationAnswerSurveyArgs {
+  input: SurveyInput
+}
+
+export interface MutationNextSurveyQuestionArgs {
+  surveyId: Scalars['Int']
+}
+
+export interface Subscription {
+  __typename?: 'Subscription'
+  surveyUpdates?: Maybe<Survey>
+}
+
+export interface SubscriptionSurveyUpdatesArgs {
+  surveyId: Scalars['Int']
+}
+
 export interface Survey {
   __typename?: 'Survey'
   id: Scalars['Int']
@@ -54,75 +128,6 @@ export interface SurveyAnswer {
 export interface SurveyInput {
   questionId: Scalars['Int']
   answer: Scalars['String']
-}
-
-export interface Work {
-  __typename?: 'Work'
-  id: Scalars['Int']
-  userID: Scalars['Int']
-  title: Scalars['String']
-  summary: Scalars['String']
-  dateCreated: Scalars['String']
-  dateModified: Scalars['String']
-}
-
-export interface Chapter {
-  __typename?: 'Chapter'
-  id: Scalars['Int']
-  work: Work
-  title: Scalars['String']
-  text: Scalars['String']
-}
-
-export interface Query {
-  __typename?: 'Query'
-  self?: Maybe<User>
-  users: Array<User>
-  work?: Maybe<Work>
-  user?: Maybe<User>
-  chapter?: Maybe<Chapter>
-  surveys: Array<Survey>
-  survey?: Maybe<Survey>
-}
-
-export interface QueryWorkArgs {
-  workID: Scalars['Int']
-}
-
-export interface QueryUserArgs {
-  userID: Scalars['Int']
-}
-
-export interface QueryChapterArgs {
-  workID: Scalars['Int']
-  chapterID: Scalars['Int']
-}
-
-export interface QuerySurveyArgs {
-  surveyId: Scalars['Int']
-}
-
-export interface Subscription {
-  __typename?: 'Subscription'
-  surveyUpdates?: Maybe<Survey>
-}
-
-export interface SubscriptionSurveyUpdatesArgs {
-  surveyId: Scalars['Int']
-}
-
-export interface Mutation {
-  __typename?: 'Mutation'
-  answerSurvey: Scalars['Boolean']
-  nextSurveyQuestion?: Maybe<Survey>
-}
-
-export interface MutationAnswerSurveyArgs {
-  input: SurveyInput
-}
-
-export interface MutationNextSurveyQuestionArgs {
-  surveyId: Scalars['Int']
 }
 
 export type ResolverTypeWrapper<T> = Promise<T> | T
@@ -206,16 +211,16 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>
   String: ResolverTypeWrapper<Scalars['String']>
   UserType: UserType
-  Survey: ResolverTypeWrapper<Survey>
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>
-  SurveyQuestion: ResolverTypeWrapper<SurveyQuestion>
-  SurveyAnswer: ResolverTypeWrapper<SurveyAnswer>
-  SurveyInput: SurveyInput
   Work: ResolverTypeWrapper<Work>
   Chapter: ResolverTypeWrapper<Chapter>
   Query: ResolverTypeWrapper<{}>
-  Subscription: ResolverTypeWrapper<{}>
   Mutation: ResolverTypeWrapper<{}>
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>
+  Subscription: ResolverTypeWrapper<{}>
+  Survey: ResolverTypeWrapper<Survey>
+  SurveyQuestion: ResolverTypeWrapper<SurveyQuestion>
+  SurveyAnswer: ResolverTypeWrapper<SurveyAnswer>
+  SurveyInput: SurveyInput
 }
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -223,152 +228,157 @@ export type ResolversParentTypes = {
   User: User
   Int: Scalars['Int']
   String: Scalars['String']
-  Survey: Survey
-  Boolean: Scalars['Boolean']
-  SurveyQuestion: SurveyQuestion
-  SurveyAnswer: SurveyAnswer
-  SurveyInput: SurveyInput
   Work: Work
   Chapter: Chapter
   Query: {}
-  Subscription: {}
   Mutation: {}
+  Boolean: Scalars['Boolean']
+  Subscription: {}
+  Survey: Survey
+  SurveyQuestion: SurveyQuestion
+  SurveyAnswer: SurveyAnswer
+  SurveyInput: SurveyInput
 }
 
 export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']
-  > = {
-    id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-    userType?: Resolver<ResolversTypes['UserType'], ParentType, ContextType>
-    name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-    __isTypeOf?: IsTypeOfResolverFn<ParentType>
-  }
-
-export type SurveyResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Survey'] = ResolversParentTypes['Survey']
-  > = {
-    id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-    name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    isStarted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
-    isCompleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
-    currentQuestion?: Resolver<Maybe<ResolversTypes['SurveyQuestion']>, ParentType, ContextType>
-    questions?: Resolver<Array<Maybe<ResolversTypes['SurveyQuestion']>>, ParentType, ContextType>
-    __isTypeOf?: IsTypeOfResolverFn<ParentType>
-  }
-
-export type SurveyQuestionResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['SurveyQuestion'] = ResolversParentTypes['SurveyQuestion']
-  > = {
-    id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-    prompt?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    choices?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>
-    answers?: Resolver<Array<ResolversTypes['SurveyAnswer']>, ParentType, ContextType>
-    survey?: Resolver<ResolversTypes['Survey'], ParentType, ContextType>
-    __isTypeOf?: IsTypeOfResolverFn<ParentType>
-  }
-
-export type SurveyAnswerResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['SurveyAnswer'] = ResolversParentTypes['SurveyAnswer']
-  > = {
-    id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-    answer?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    question?: Resolver<ResolversTypes['SurveyQuestion'], ParentType, ContextType>
-    __isTypeOf?: IsTypeOfResolverFn<ParentType>
-  }
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  userType?: Resolver<ResolversTypes['UserType'], ParentType, ContextType>
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
 
 export type WorkResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Work'] = ResolversParentTypes['Work']
-  > = {
-    id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-    userID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-    title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    dateCreated?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    dateModified?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    __isTypeOf?: IsTypeOfResolverFn<ParentType>
-  }
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  userID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  dateCreated?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  dateModified?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  chapterCurrMaxID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
 
 export type ChapterResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Chapter'] = ResolversParentTypes['Chapter']
-  > = {
-    id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-    work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>
-    title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    text?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-    __isTypeOf?: IsTypeOfResolverFn<ParentType>
-  }
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  workID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  chapterID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  userID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  dateCreated?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  dateModified?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
 
 export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
-  > = {
-    self?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
-    users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>
-    work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryWorkArgs, 'workID'>>
-    user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'userID'>>
-    chapter?: Resolver<
-      Maybe<ResolversTypes['Chapter']>,
-      ParentType,
-      ContextType,
-      RequireFields<QueryChapterArgs, 'workID' | 'chapterID'>
-    >
-    surveys?: Resolver<Array<ResolversTypes['Survey']>, ParentType, ContextType>
-    survey?: Resolver<
-      Maybe<ResolversTypes['Survey']>,
-      ParentType,
-      ContextType,
-      RequireFields<QuerySurveyArgs, 'surveyId'>
-    >
-  }
-
-export type SubscriptionResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']
-  > = {
-    surveyUpdates?: SubscriptionResolver<
-      Maybe<ResolversTypes['Survey']>,
-      'surveyUpdates',
-      ParentType,
-      ContextType,
-      RequireFields<SubscriptionSurveyUpdatesArgs, 'surveyId'>
-    >
-  }
+> = {
+  self?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>
+  work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryWorkArgs, 'workID'>>
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'userID'>>
+  chapter?: Resolver<
+    Maybe<ResolversTypes['Chapter']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryChapterArgs, 'wrkID' | 'chID'>
+  >
+  surveys?: Resolver<Array<ResolversTypes['Survey']>, ParentType, ContextType>
+  survey?: Resolver<
+    Maybe<ResolversTypes['Survey']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerySurveyArgs, 'surveyId'>
+  >
+}
 
 export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
-  > = {
-    answerSurvey?: Resolver<
-      ResolversTypes['Boolean'],
-      ParentType,
-      ContextType,
-      RequireFields<MutationAnswerSurveyArgs, 'input'>
-    >
-    nextSurveyQuestion?: Resolver<
-      Maybe<ResolversTypes['Survey']>,
-      ParentType,
-      ContextType,
-      RequireFields<MutationNextSurveyQuestionArgs, 'surveyId'>
-    >
-  }
+> = {
+  answerSurvey?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAnswerSurveyArgs, 'input'>
+  >
+  nextSurveyQuestion?: Resolver<
+    Maybe<ResolversTypes['Survey']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationNextSurveyQuestionArgs, 'surveyId'>
+  >
+}
+
+export type SubscriptionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']
+> = {
+  surveyUpdates?: SubscriptionResolver<
+    Maybe<ResolversTypes['Survey']>,
+    'surveyUpdates',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionSurveyUpdatesArgs, 'surveyId'>
+  >
+}
+
+export type SurveyResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Survey'] = ResolversParentTypes['Survey']
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  isStarted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  isCompleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  currentQuestion?: Resolver<Maybe<ResolversTypes['SurveyQuestion']>, ParentType, ContextType>
+  questions?: Resolver<Array<Maybe<ResolversTypes['SurveyQuestion']>>, ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
+
+export type SurveyQuestionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SurveyQuestion'] = ResolversParentTypes['SurveyQuestion']
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  prompt?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  choices?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>
+  answers?: Resolver<Array<ResolversTypes['SurveyAnswer']>, ParentType, ContextType>
+  survey?: Resolver<ResolversTypes['Survey'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
+
+export type SurveyAnswerResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SurveyAnswer'] = ResolversParentTypes['SurveyAnswer']
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  answer?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  question?: Resolver<ResolversTypes['SurveyQuestion'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
 
 export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>
-  Survey?: SurveyResolvers<ContextType>
-  SurveyQuestion?: SurveyQuestionResolvers<ContextType>
-  SurveyAnswer?: SurveyAnswerResolvers<ContextType>
   Work?: WorkResolvers<ContextType>
   Chapter?: ChapterResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
-  Subscription?: SubscriptionResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
+  Subscription?: SubscriptionResolvers<ContextType>
+  Survey?: SurveyResolvers<ContextType>
+  SurveyQuestion?: SurveyQuestionResolvers<ContextType>
+  SurveyAnswer?: SurveyAnswerResolvers<ContextType>
 }
 
 /**
