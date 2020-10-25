@@ -1,5 +1,6 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { User as GraphqlUser, UserType } from '../graphql/schema.types'
+import { Work } from './Work'
 
 @Entity()
 export class User extends BaseEntity implements GraphqlUser {
@@ -30,12 +31,7 @@ export class User extends BaseEntity implements GraphqlUser {
   })
   name: string
 
-  // @OneToMany(() => worksPublished, question => question.survey, { eager: true })
-  // questions: SurveyQuestion[]
-
-  // @Column({
-
-  // })
-  // worksPublished: [Work!]!
+  @OneToMany(() => Work, work => work.user, { eager: true })
+  works: Work[]
 
 }

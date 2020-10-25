@@ -1,18 +1,14 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-// import { User as GraphqlUser, UserType } from '../graphql/schema.types'
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Work } from "./Work"
 
 @Entity()
 export class Chapter extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  // @CreateDateColumn()
-  // timeCreated: Date
-
-  // @UpdateDateColumn()
-  // timeUpdated: Date
-  @Column({ nullable: false })
-  workID: number
+  // @Column({ nullable: false })
+  // NOTE: no longer needed this once we added the many to one relations in the chapter.ts file because having a work attached to it already creates a workid field
+  // workID: number
 
   @Column({ nullable: false })
   chapterID: number
@@ -30,15 +26,12 @@ export class Chapter extends BaseEntity {
   })
   text: string
 
-  @Column({
-    length: 100,
-  })
-  dateCreated: string
+  @CreateDateColumn()
+  timeCreated: Date
 
-  @Column({
-    length: 100,
-  })
-  dateModified: string
+  @UpdateDateColumn()
+  timeUpdated: Date
 
-
+  @ManyToOne(() => Work, work => work.chapters)
+  work: Work
 }

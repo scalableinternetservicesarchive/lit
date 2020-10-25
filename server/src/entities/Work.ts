@@ -1,18 +1,14 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-// import { User as GraphqlUser, UserType } from '../graphql/schema.types'
-
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Chapter } from "./Chapter"
+import { User } from "./User"
 @Entity()
 export class Work extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  // @CreateDateColumn()
-  // timeCreated: Date
-
-  // @UpdateDateColumn()
-  // timeUpdated: Date
-  @Column({ nullable: true })
-  userID: number
+  // @Column({ nullable: true })
+  // NOTE: no longer needed this once we added the many to one relations in the work.ts file because having a User attached to it already creates a userid field
+  // userID: number
 
   @Column({
     length: 100,
@@ -24,17 +20,20 @@ export class Work extends BaseEntity {
   })
   summary: string
 
-  @Column({
-    length: 100,
-  })
-  dateCreated: string
-  @Column({
-    length: 100,
-  })
-  dateModified: string
+  // TODO: figure out how to query the timeCreated and the timeUpdated bc as of now I cannot figure a way to do it from the localhost:3000/graphql endpoint
+  @CreateDateColumn()
+  timeCreated: Date
+
+  @UpdateDateColumn()
+  timeUpdated: Date
 
   @Column({ nullable: false })
   chapterCurrMaxID: number
 
-  // chapters: [Chapter]!
+  @ManyToOne(() => User, user => user.works)
+  user: User
+
+  @OneToMany(() => Chapter, chapter => chapter.work, { eager: true })
+  chapters: Chapter[]
+
 }
