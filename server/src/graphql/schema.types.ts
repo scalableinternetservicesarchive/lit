@@ -18,6 +18,7 @@ export interface User {
   userType: UserType
   name: Scalars['String']
   email?: Maybe<Scalars['String']>
+  works?: Maybe<Array<Work>>
 }
 
 export enum UserType {
@@ -28,52 +29,48 @@ export enum UserType {
 export interface Work {
   __typename?: 'Work'
   id: Scalars['Int']
-  userID: Scalars['Int']
   title: Scalars['String']
   summary: Scalars['String']
-  dateCreated: Scalars['String']
-  dateModified: Scalars['String']
   chapterCurrMaxID: Scalars['Int']
+  chapters: Array<Chapter>
+  user: User
 }
 
 export interface Chapter {
   __typename?: 'Chapter'
   id: Scalars['Int']
-  workID: Scalars['Int']
   chapterID: Scalars['Int']
   userID: Scalars['Int']
   title: Scalars['String']
   text: Scalars['String']
-  dateCreated: Scalars['String']
-  dateModified: Scalars['String']
+  work: Work
 }
 
 export interface Query {
   __typename?: 'Query'
   self?: Maybe<User>
-  users: Array<User>
-  work?: Maybe<Work>
-  user?: Maybe<User>
-  chapter?: Maybe<Chapter>
   surveys: Array<Survey>
   survey?: Maybe<Survey>
+  user?: Maybe<User>
+  users: Array<User>
+  work?: Maybe<Work>
+  chapter?: Maybe<Chapter>
 }
 
-export interface QueryWorkArgs {
-  workID: Scalars['Int']
+export interface QuerySurveyArgs {
+  surveyId: Scalars['Int']
 }
 
 export interface QueryUserArgs {
   userID: Scalars['Int']
 }
 
-export interface QueryChapterArgs {
-  wrkID: Scalars['Int']
-  chID: Scalars['Int']
+export interface QueryWorkArgs {
+  workID: Scalars['Int']
 }
 
-export interface QuerySurveyArgs {
-  surveyId: Scalars['Int']
+export interface QueryChapterArgs {
+  chID: Scalars['Int']
 }
 
 export interface Mutation {
@@ -248,6 +245,7 @@ export type UserResolvers<
   userType?: Resolver<ResolversTypes['UserType'], ParentType, ContextType>
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  works?: Resolver<Maybe<Array<ResolversTypes['Work']>>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
@@ -256,12 +254,11 @@ export type WorkResolvers<
   ParentType extends ResolversParentTypes['Work'] = ResolversParentTypes['Work']
 > = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-  userID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-  dateCreated?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-  dateModified?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   chapterCurrMaxID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  chapters?: Resolver<Array<ResolversTypes['Chapter']>, ParentType, ContextType>
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
@@ -270,13 +267,11 @@ export type ChapterResolvers<
   ParentType extends ResolversParentTypes['Chapter'] = ResolversParentTypes['Chapter']
 > = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-  workID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   chapterID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   userID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-  dateCreated?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-  dateModified?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
@@ -285,15 +280,6 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = {
   self?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
-  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>
-  work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryWorkArgs, 'workID'>>
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'userID'>>
-  chapter?: Resolver<
-    Maybe<ResolversTypes['Chapter']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryChapterArgs, 'wrkID' | 'chID'>
-  >
   surveys?: Resolver<Array<ResolversTypes['Survey']>, ParentType, ContextType>
   survey?: Resolver<
     Maybe<ResolversTypes['Survey']>,
@@ -301,6 +287,10 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QuerySurveyArgs, 'surveyId'>
   >
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'userID'>>
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>
+  work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryWorkArgs, 'workID'>>
+  chapter?: Resolver<Maybe<ResolversTypes['Chapter']>, ParentType, ContextType, RequireFields<QueryChapterArgs, 'chID'>>
 }
 
 export type MutationResolvers<

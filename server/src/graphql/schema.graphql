@@ -9,6 +9,7 @@
 # run in parallel, while mutations run one at a time. On the client, queries
 # may use a cached response, while mutations always result in a request.
 
+# NOTE: always run "npm run gen" after modifying this file
 
 schema {
   query: Query
@@ -21,24 +22,46 @@ type User {
   userType: UserType!
   name: String!
   email: String
-  # worksPublished: [Work!]!
+  works: [Work!] # TODO: question: what does having a question mark after inside the brackets and outside the brackets mean?
 }
+
+
+# GET work/:workid
+# work/1
+# GET chapter/:workid/:chapterid
+# work
+# 1
+# 3
+# 4
+
+# userA/1
+#      /5
+# userB/3
+#      /4
 
 enum UserType { ADMIN, USER }
 
+# NOTE: we don't need a workid for this one bc it is fine if it increments fast
+
 type Work {
   id: Int!
-  userID: Int!
+  #userID: Int!  # NOTE: no longer needed this once we added the many to one relations in the work.ts file because having a User attached to it already creates a userid field
   title: String!
   summary: String!
-  dateCreated: String!
-  dateModified: String!
   chapterCurrMaxID: Int!
+  chapters: [Chapter!]!
+  user: User!
 }
 
+# NOTE: we don't have to have a chapterid but it is much clearer to have one so that it doesn't increment too quickly in relation to the work
 # maxchapter id
 # chapter table
 # primary key  work id chapter id deleted
+
+# work    id
+#  1       /1
+#2        /3       /4
+
 
 # 2             2    1
 # 3             1    2
@@ -59,34 +82,28 @@ type Work {
 
 type Chapter {
   id: Int!
-  workID: Int!
+  # workID: Int! # NOTE: no longer needed this once we added the many to one relations in the chapter.ts file because having a work attached to it already creates a workid field
   chapterID: Int!
   userID: Int!
   title: String!
   text: String!
-  dateCreated: String!
-  dateModified: String!
+  work: Work!
 }
 
 type Query {
   # Returns the logged-in user making the query, or null if anonymous.
   self: User
 
-  users: [User!]!
-  # works: [Work!]!
-
-  work(workID: Int!): Work
-  user(userID: Int!): User
-  chapter(wrkID: Int!, chID: Int!): Chapter
-  # work(workTitle: String!): Work
-  # user(userName: String!): User
-  # chapter(workTitle: String!, chapterTitle: Int!): Chapter
   surveys: [Survey!]!
   survey (surveyId: Int!): Survey
+
+  user(userID: Int!): User
+  users: [User!]!
+  work(workID: Int!): Work
+  chapter(chID: Int!): Chapter
 }
 
 type Mutation {
-  # addWork(title: String!, user: User!): Work
   # Records an answer to a survey question presented in class.
   answerSurvey (input: SurveyInput!): Boolean!
 

@@ -30,10 +30,36 @@ export const graphqlRoot: Resolvers<Context> = {
     survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
     surveys: () => Survey.find(),
     user: async (_, { userID }) => (await User.findOne({ where: { id: userID } })) || null,
+    users: () => User.find(),
     // the {workID} is specific to the parameter set within query type of schema.graphql. id is specific to the column name within the database created by Work.ts
+    // TODO: ask why the following is the case? --> the following does not work anymore once I put the many-to-one relation inside the work.ts file
+    // answer: you didn't run "npm run gen" after modifying the schema.graphql file
     work: async (_, { workID }) => (await Work.findOne({ where: { id: workID } })) || null,
-    chapter: async (_, { wrkID, chID }) => (await Chapter.findOne({ where: { workID: wrkID, chapterID: chID } })) || null,
-  }, // select * from Work where workID = <user input> AND chapterID = <user input>
+    // TODO: tried executing the following, but it wouldn't work. It would work if I took out the "user {...},". How can we query user from work?
+    // This is important because we need to learn how to access the user from the work
+    // {
+    //   work(workID: 1) {
+    //     id,
+    //     title,
+    //     user {
+    //       name
+    //     },
+    //   }
+    // }
+
+    // The "chapter..." query below works, but I don't think we'd ever need it for a get request since we would just access it via the "work" endpoint by doing something like
+    // {
+    //   work(workID: 1) {
+    //     id,
+    //     title,
+    //     chapters {
+    //       id,
+    //       ...
+    //     },
+    //   }
+    // }
+    chapter: async (_, { chID }) => (await Chapter.findOne({ where: { chapterID: chID } })) || null,
+  }, // select * from chapter where chapterID = <user input>
   Mutation: {
     answerSurvey: async (_, { input }, ctx) => {
       const { answer, questionId } = input
