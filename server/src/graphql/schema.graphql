@@ -22,7 +22,10 @@ type User {
   userType: UserType!
   name: String!
   email: String
-  works: [Work!] # TODO: question: what does having a question mark after inside the brackets and outside the brackets mean?
+  works: [Work!]
+  # NOTE:
+    # exclamation point inside bracket means all elements within array are not null
+    # exclamation point outside bracket means array cannot be null
 }
 
 
@@ -48,7 +51,6 @@ type Work {
   #userID: Int!  # NOTE: no longer needed this once we added the many to one relations in the work.ts file because having a User attached to it already creates a userid field
   title: String!
   summary: String!
-  chapterCurrMaxID: Int!
   chapters: [Chapter!]!
   user: User!
 }
@@ -88,9 +90,7 @@ input WorkInput {
 type Chapter {
   id: Int!
   # workID: Int! # NOTE: no longer needed this once we added the many to one relations in the chapter.ts file because having a work attached to it already creates a workid field
-  chapterID: Int!
-  userID: Int!
-  title: String!
+  title: String
   text: String!
   work: Work!
 }
@@ -125,6 +125,11 @@ type Mutation {
   updateSummary (input: WorkInput!): Boolean!
   # Edit chapter /works/:workid/:chapterid
   updateChapter (input: ChapterInput!): Boolean!
+  # Returns new work ID
+  createWork(workUserID: Int!, workTitle: String!, workSummary: String!): Int
+
+  # Returns new chapter ID
+  addChapter(workID: Int!, chapterTitle: String!, chapterText: String!): Int
 }
 
 

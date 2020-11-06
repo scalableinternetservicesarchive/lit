@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import path from 'path'
@@ -48,7 +49,7 @@ export const graphqlRoot: Resolvers<Context> = {
     // }
 
     // The "chapter..." query below works, but I don't think we'd ever need it for a get request since we would just access it via the "work" endpoint by doing something like.
-      // TODO: but also we need to find a way to access a chapter directly without having to route through work first. basically you need to find a way to access the id of the work as well when doing a chapter request
+    // TODO: but also we need to find a way to access a chapter directly without having to route through work first. basically you need to find a way to access the id of the work as well when doing a chapter request
     // {
     //   work(workID: 1) {
     //     id,
@@ -59,7 +60,8 @@ export const graphqlRoot: Resolvers<Context> = {
     //     },
     //   }
     // }
-    chapter: async (_, { chID }) => (await Chapter.findOne({ where: { chapterID: chID } })) || null,
+    chapter: async (_, { chID }) => (await Chapter.findOne({ where: { id: chID } })) || null,
+    // if you want to query work info within a chapter query, then you need to add in ", relations: ['work']"
   }, // select * from chapter where chapterID = <user input>
   Mutation: {
     answerSurvey: async (_, { input }, ctx) => {
@@ -95,13 +97,35 @@ export const graphqlRoot: Resolvers<Context> = {
     },
     updateChapter: async (_, { input }, ctx) => {
       const { title, text, chapterID } = input
-      const targetChapter = check(await Chapter.findOne({ where: { chapterID: chapterID } }))
+      const targetChapter = check(await Chapter.findOne({ where: { id: chapterID } }))
       var newChapter = targetChapter
       newChapter.title = title
       newChapter.text = text
       await newChapter.save()
 
       return true
+    },
+    createWork: async (_, { workUserID, workTitle, workSummary }, ctx) => {
+      const work = new Work()
+      const author = check(await User.findOne({ where: { id: workUserID } }))
+      work.user = author
+      work.title = workTitle
+      work.summary = workSummary
+      work.timeCreated = new Date()
+      await work.save()
+      return work.id
+    },
+    addChapter: async (_, { workID, chapterTitle, chapterText }, ctx) => {
+      const parentWork = check(await Work.findOne({ where: { id: workID } }))
+      parentWork.timeUpdated = new Date()
+      const chapter = new Chapter()
+      chapter.work = parentWork
+      chapter.title = chapterTitle
+      chapter.text = chapterText
+      chapter.timeCreated = new Date()
+      await parentWork.save()
+      await chapter.save()
+      return chapter.id
     },
   },
   Subscription: {
@@ -111,3 +135,63 @@ export const graphqlRoot: Resolvers<Context> = {
     },
   },
 }
+
+/**
+
+QUERIES
+
+mutation testWorkPut($workputinput: WorkInput!) {
+  updateSummary(input: $workputinput)
+}
+
+mutation testChapterPut($chapterputinput: ChapterInput!) {
+  updateChapter(input: $chapterputinput)
+}
+
+mutation testWorkPost ($workUserIdPost: Int!, $workTitlePost: String!, $workSummaryPost: String!) {
+  createWork(workUserID: $workUserIdPost, workTitle: $workTitlePost, workSummary: $workSummaryPost)
+}
+
+mutation testChapterPost ($workIdPost: Int!, $chapterTitlePost: String!, $chapterTextPost: String!){
+  addChapter (workID: $workIdPost, chapterTitle: $chapterTitlePost, chapterText: $chapterTextPost)
+}
+
+query check($workID: Int!, $chapterID: Int!) {
+  work(workID: $workID) {
+    summary
+    title
+    id
+  }
+  chapter(chID: $chapterID) {
+    title
+    text
+  }
+}
+
+QUERY VARIABLES:
+
+{
+  "workputinput": {
+    "workID": 1,
+    "summary": "udyeah!"
+  },
+
+  "chapterputinput": {
+    "chapterID": 1,
+    "title": "new title",
+    "text": "inserted text"
+  },
+
+  "workUserIdPost": 1,
+  "workTitlePost": "work title post",
+  "workSummaryPost": "work Summary post",
+
+  "workIdPost": 2,
+  "chapterTitlePost": "chapter title post",
+  "chapterTextPost": "chapter text post",
+
+  "workID": 2,
+  "chapterID": 2
+}
+
+ */

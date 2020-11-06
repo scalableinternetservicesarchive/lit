@@ -31,7 +31,6 @@ export interface Work {
   id: Scalars['Int']
   title: Scalars['String']
   summary: Scalars['String']
-  chapterCurrMaxID: Scalars['Int']
   chapters: Array<Chapter>
   user: User
 }
@@ -44,9 +43,7 @@ export interface WorkInput {
 export interface Chapter {
   __typename?: 'Chapter'
   id: Scalars['Int']
-  chapterID: Scalars['Int']
-  userID: Scalars['Int']
-  title: Scalars['String']
+  title?: Maybe<Scalars['String']>
   text: Scalars['String']
   work: Work
 }
@@ -90,6 +87,8 @@ export interface Mutation {
   nextSurveyQuestion?: Maybe<Survey>
   updateSummary: Scalars['Boolean']
   updateChapter: Scalars['Boolean']
+  createWork?: Maybe<Scalars['Int']>
+  addChapter?: Maybe<Scalars['Int']>
 }
 
 export interface MutationAnswerSurveyArgs {
@@ -106,6 +105,18 @@ export interface MutationUpdateSummaryArgs {
 
 export interface MutationUpdateChapterArgs {
   input: ChapterInput
+}
+
+export interface MutationCreateWorkArgs {
+  workUserID: Scalars['Int']
+  workTitle: Scalars['String']
+  workSummary: Scalars['String']
+}
+
+export interface MutationAddChapterArgs {
+  workID: Scalars['Int']
+  chapterTitle: Scalars['String']
+  chapterText: Scalars['String']
 }
 
 export interface Subscription {
@@ -281,7 +292,6 @@ export type WorkResolvers<
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-  chapterCurrMaxID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   chapters?: Resolver<Array<ResolversTypes['Chapter']>, ParentType, ContextType>
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
@@ -292,9 +302,7 @@ export type ChapterResolvers<
   ParentType extends ResolversParentTypes['Chapter'] = ResolversParentTypes['Chapter']
 > = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-  chapterID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-  userID?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
@@ -345,6 +353,18 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateChapterArgs, 'input'>
+  >
+  createWork?: Resolver<
+    Maybe<ResolversTypes['Int']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateWorkArgs, 'workUserID' | 'workTitle' | 'workSummary'>
+  >
+  addChapter?: Resolver<
+    Maybe<ResolversTypes['Int']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddChapterArgs, 'workID' | 'chapterTitle' | 'chapterText'>
   >
 }
 

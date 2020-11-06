@@ -10,12 +10,6 @@ export class Chapter extends BaseEntity {
   // NOTE: no longer needed this once we added the many to one relations in the chapter.ts file because having a work attached to it already creates a workid field
   // workID: number
 
-  @Column({ nullable: false })
-  chapterID: number
-
-  @Column({ nullable: false })
-  userID: number
-
   @Column({
     length: 100,
   })

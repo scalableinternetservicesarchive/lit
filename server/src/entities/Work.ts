@@ -27,9 +27,6 @@ export class Work extends BaseEntity {
   @UpdateDateColumn()
   timeUpdated: Date
 
-  @Column({ nullable: false })
-  chapterCurrMaxID: number
-
   @ManyToOne(() => User, user => user.works)
   user: User
 
