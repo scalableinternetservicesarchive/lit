@@ -33,7 +33,7 @@ export const graphqlRoot: Resolvers<Context> = {
     users: () => User.find(),
     // the {workID} is specific to the parameter set within query type of schema.graphql. id is specific to the column name within the database created by Work.ts
     // TODO: ask why the following is the case? --> the following does not work anymore once I put the many-to-one relation inside the work.ts file
-    // answer: you didn't run "npm run gen" after modifying the schema.graphql file
+    // answer: you didn't run "npm run gen" after modifying the schema.graphql file. And usually the schema in the schema.graphql doesn't match the schema specified in the files of the entities folder if the schema.graphql doesn't seem to be the problem.
     work: async (_, { workID }) => (await Work.findOne({ where: { id: workID } })) || null,
     // TODO: tried executing the following, but it wouldn't work. It would work if I took out the "user {...},". How can we query user from work?
     // This is important because we need to learn how to access the user from the work
@@ -47,7 +47,8 @@ export const graphqlRoot: Resolvers<Context> = {
     //   }
     // }
 
-    // The "chapter..." query below works, but I don't think we'd ever need it for a get request since we would just access it via the "work" endpoint by doing something like
+    // The "chapter..." query below works, but I don't think we'd ever need it for a get request since we would just access it via the "work" endpoint by doing something like.
+      // TODO: but also we need to find a way to access a chapter directly without having to route through work first. basically you need to find a way to access the id of the work as well when doing a chapter request
     // {
     //   work(workID: 1) {
     //     id,

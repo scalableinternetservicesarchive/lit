@@ -6,9 +6,7 @@
 export type UserScript = () => Promise<any>
 
 export async function userScript() {
-  await fetch('https://lit.cloudcity.computer/')
-  await fetch('https://lit.cloudcity.computer/')
-  await fetch('https://lit.cloudcity.computer/')
+  await fetch('http://localhost:3000/')
 }
 
 // set this is you require authenticated requests
