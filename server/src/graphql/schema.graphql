@@ -85,7 +85,7 @@ type Chapter {
   # workID: Int! # NOTE: no longer needed this once we added the many to one relations in the chapter.ts file because having a work attached to it already creates a workid field
   chapterID: Int!
   userID: Int!
-  title: String!
+  title: String
   text: String!
   work: Work!
 }
@@ -109,6 +109,12 @@ type Mutation {
 
   # Moves the survey to the next question (or starts it if it hasn't started). ADMIN only.
   nextSurveyQuestion (surveyId: Int!): Survey
+
+  # Returns new work ID
+  createWork(workUserID: Int!, workTitle: String!, workSummary: String!): Int
+
+  # Returns new chapter ID
+  addChapter(workID: Int!, chapterTitle: String!, chapterText: String!): Int
 }
 
 

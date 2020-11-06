@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import path from 'path'
@@ -82,6 +83,34 @@ export const graphqlRoot: Resolvers<Context> = {
       await survey.save()
       ctx.pubsub.publish('SURVEY_UPDATE_' + surveyId, survey)
       return survey
+    },
+    createWork: async (_, { workUserID, workTitle, workSummary }, ctx) => {
+      const [works, prevWorkId] = check(await Work.findAndCount())
+      const work = new Work()
+      work.id = prevWorkId + 1
+      work.user.id = workUserID
+      work.title = workTitle
+      work.summary = workSummary
+      work.timeCreated = new Date()
+      await work.save()
+      return work.id
+    },
+    addChapter: async (_, { workID, chapterTitle, chapterText }, ctx) => {
+      const [chapters, prevChapterID] = check(await Chapter.findAndCount())
+      const parentWork = check(await Work.findOne({ where: { id: workID } }))
+      const chapterID = parentWork.chapterCurrMaxID + 1
+      const chapter = new Chapter()
+      chapter.id = prevChapterID
+      chapter.chapterID = chapterID
+      chapter.work.id = workID
+      chapter.title = chapterTitle
+      chapter.text = chapterText
+      chapter.timeCreated = new Date()
+      chapter.work.timeUpdated = new Date()
+      parentWork.chapterCurrMaxID = chapterID
+      await parentWork.save()
+      await chapter.save()
+      return chapter.id
     },
   },
   Subscription: {
