@@ -80,6 +80,11 @@ type Work {
 # ...
 
 
+input WorkInput {
+  workID: Int!
+  summary: String!
+}
+
 type Chapter {
   id: Int!
   # workID: Int! # NOTE: no longer needed this once we added the many to one relations in the chapter.ts file because having a work attached to it already creates a workid field
@@ -88,6 +93,12 @@ type Chapter {
   title: String!
   text: String!
   work: Work!
+}
+
+input ChapterInput {
+  chapterID: Int!
+  title: String!
+  text: String!
 }
 
 type Query {
@@ -109,6 +120,11 @@ type Mutation {
 
   # Moves the survey to the next question (or starts it if it hasn't started). ADMIN only.
   nextSurveyQuestion (surveyId: Int!): Survey
+
+  # Edit work summary (works/:workid)
+  updateSummary (input: WorkInput!): Boolean!
+  # Edit chapter /works/:workid/:chapterid
+  updateChapter (input: ChapterInput!): Boolean!
 }
 
 

@@ -36,6 +36,11 @@ export interface Work {
   user: User
 }
 
+export interface WorkInput {
+  workID: Scalars['Int']
+  summary: Scalars['String']
+}
+
 export interface Chapter {
   __typename?: 'Chapter'
   id: Scalars['Int']
@@ -44,6 +49,12 @@ export interface Chapter {
   title: Scalars['String']
   text: Scalars['String']
   work: Work
+}
+
+export interface ChapterInput {
+  chapterID: Scalars['Int']
+  title: Scalars['String']
+  text: Scalars['String']
 }
 
 export interface Query {
@@ -77,6 +88,8 @@ export interface Mutation {
   __typename?: 'Mutation'
   answerSurvey: Scalars['Boolean']
   nextSurveyQuestion?: Maybe<Survey>
+  updateSummary: Scalars['Boolean']
+  updateChapter: Scalars['Boolean']
 }
 
 export interface MutationAnswerSurveyArgs {
@@ -85,6 +98,14 @@ export interface MutationAnswerSurveyArgs {
 
 export interface MutationNextSurveyQuestionArgs {
   surveyId: Scalars['Int']
+}
+
+export interface MutationUpdateSummaryArgs {
+  input: WorkInput
+}
+
+export interface MutationUpdateChapterArgs {
+  input: ChapterInput
 }
 
 export interface Subscription {
@@ -209,7 +230,9 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>
   UserType: UserType
   Work: ResolverTypeWrapper<Work>
+  WorkInput: WorkInput
   Chapter: ResolverTypeWrapper<Chapter>
+  ChapterInput: ChapterInput
   Query: ResolverTypeWrapper<{}>
   Mutation: ResolverTypeWrapper<{}>
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
@@ -226,7 +249,9 @@ export type ResolversParentTypes = {
   Int: Scalars['Int']
   String: Scalars['String']
   Work: Work
+  WorkInput: WorkInput
   Chapter: Chapter
+  ChapterInput: ChapterInput
   Query: {}
   Mutation: {}
   Boolean: Scalars['Boolean']
@@ -308,6 +333,18 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationNextSurveyQuestionArgs, 'surveyId'>
+  >
+  updateSummary?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateSummaryArgs, 'input'>
+  >
+  updateChapter?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateChapterArgs, 'input'>
   >
 }
 

@@ -84,6 +84,25 @@ export const graphqlRoot: Resolvers<Context> = {
       ctx.pubsub.publish('SURVEY_UPDATE_' + surveyId, survey)
       return survey
     },
+    updateSummary: async (_, { input }, ctx) => {
+      const { summary, workID } = input
+      const targetWork = check(await Work.findOne({ where: { id: workID } }))
+      var newWork = targetWork
+      newWork.summary = summary
+      await newWork.save()
+
+      return true
+    },
+    updateChapter: async (_, { input }, ctx) => {
+      const { title, text, chapterID } = input
+      const targetChapter = check(await Chapter.findOne({ where: { chapterID: chapterID } }))
+      var newChapter = targetChapter
+      newChapter.title = title
+      newChapter.text = text
+      await newChapter.save()
+
+      return true
+    },
   },
   Subscription: {
     surveyUpdates: {
