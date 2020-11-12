@@ -127,6 +127,22 @@ export const graphqlRoot: Resolvers<Context> = {
       await chapter.save()
       return chapter.id
     },
+    deleteWork: async (_, { workID }) => {
+      const targetWork = check(await Work.findOne({ where: { id: workID } }))
+      const targetChapters = check(await Chapter.find({ where: { work: targetWork } }))
+      //delete all related chapters first
+      for (let chapter of targetChapters) {
+        await chapter.remove()
+      }
+      //delete the work
+      await targetWork.remove()
+      return true;
+    },
+    deleteChapter: async (_, { chID }) => {
+      const targetChapter = check(await Chapter.findOne({ where: { id: chID } }))
+      await targetChapter.remove()
+      return true;
+    },
   },
   Subscription: {
     surveyUpdates: {

@@ -89,6 +89,8 @@ export interface Mutation {
   updateChapter: Scalars['Boolean']
   createWork?: Maybe<Scalars['Int']>
   addChapter?: Maybe<Scalars['Int']>
+  deleteWork: Scalars['Boolean']
+  deleteChapter: Scalars['Boolean']
 }
 
 export interface MutationAnswerSurveyArgs {
@@ -117,6 +119,14 @@ export interface MutationAddChapterArgs {
   workID: Scalars['Int']
   chapterTitle: Scalars['String']
   chapterText: Scalars['String']
+}
+
+export interface MutationDeleteWorkArgs {
+  workID: Scalars['Int']
+}
+
+export interface MutationDeleteChapterArgs {
+  chID: Scalars['Int']
 }
 
 export interface Subscription {
@@ -365,6 +375,18 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationAddChapterArgs, 'workID' | 'chapterTitle' | 'chapterText'>
+  >
+  deleteWork?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteWorkArgs, 'workID'>
+  >
+  deleteChapter?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteChapterArgs, 'chID'>
   >
 }
 

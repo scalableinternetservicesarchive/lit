@@ -130,6 +130,12 @@ type Mutation {
 
   # Returns new chapter ID
   addChapter(workID: Int!, chapterTitle: String!, chapterText: String!): Int
+
+  # Delete the work with workID
+  deleteWork(workID: Int!): Boolean!
+
+  # Delete the chapter with chapterID
+  deleteChapter(chID: Int!): Boolean!
 }
 
 
