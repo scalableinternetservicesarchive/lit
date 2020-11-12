@@ -258,3 +258,77 @@ You may execute your user scripts locally or using a distributed exeucutor (AWS 
 Your Honeycomb instrumentation will provide all the data visualizations you need. Login to Honeycomb to view your server metrics.
 
 ![image](https://user-images.githubusercontent.com/1095573/93257787-3d892b00-f752-11ea-8219-e1789b42cbf0.png)
+
+### Testing Backend
+#### MYSQL Database
+`docker exec -it lit_db_1 mysql -uroot -p`
+#### GraphQL PlayGround
+Go to http://localhost:3000/graphql and test with the following commands
+- Queries And Mutations
+```
+mutation testWorkPut($workputinput: WorkInput!) {
+  updateSummary(input: $workputinput)
+}
+
+mutation testChapterPut($chapterputinput: ChapterInput!) {
+  updateChapter(input: $chapterputinput)
+}
+
+mutation testWorkPost ($workUserIdPost: Int!, $workTitlePost: String!, $workSummaryPost: String!) {
+  createWork(workUserID: $workUserIdPost, workTitle: $workTitlePost, workSummary: $workSummaryPost)
+}
+
+mutation testChapterPost ($workIdPost: Int!, $chapterTitlePost: String!, $chapterTextPost: String!){
+  addChapter (workID: $workIdPost, chapterTitle: $chapterTitlePost, chapterText: $chapterTextPost)
+}
+
+mutation testDeleteWork($workID: Int!) {
+  deleteWork(workID: $workID)
+}
+
+mutation testDeleteChapter($chapterID: Int!) {
+  deleteChapter(chID: $chapterID)
+}
+
+query check($workID: Int!, $chapterID: Int!) {
+  work(workID: $workID) {
+    summary
+    title
+    id
+    chapters{
+      id
+    }
+  }
+  chapter(chID: $chapterID) {
+    title
+    text
+  }
+}
+```
+- QUERY VARIABLES
+```
+{
+  "workputinput": {
+    "workID": 1,
+    "summary": "udyeah!"
+  },
+
+  "chapterputinput": {
+    "chapterID": 1,
+    "title": "new title",
+    "text": "inserted text"
+  },
+
+  "workUserIdPost": 1,
+  "workTitlePost": "work title post",
+  "workSummaryPost": "work Summary post",
+
+  "workIdPost": 2,
+  "chapterTitlePost": "chapter title post",
+  "chapterTextPost": "chapter text post",
+
+  "workID": 2,
+  "chapterID": 2
+}
+
+ ```
