@@ -127,6 +127,22 @@ export const graphqlRoot: Resolvers<Context> = {
       await chapter.save()
       return chapter.id
     },
+    deleteWork: async (_, { workID }) => {
+      const targetWork = check(await Work.findOne({ where: { id: workID } }))
+      const targetChapters = check(await Chapter.find({ where: { work: targetWork } }))
+      //delete all related chapters first
+      for (let chapter of targetChapters) {
+        await chapter.remove()
+      }
+      //delete the work
+      await targetWork.remove()
+      return true;
+    },
+    deleteChapter: async (_, { chID }) => {
+      const targetChapter = check(await Chapter.findOne({ where: { id: chID } }))
+      await targetChapter.remove()
+      return true;
+    },
   },
   Subscription: {
     surveyUpdates: {
@@ -135,63 +151,3 @@ export const graphqlRoot: Resolvers<Context> = {
     },
   },
 }
-
-/**
-
-QUERIES
-
-mutation testWorkPut($workputinput: WorkInput!) {
-  updateSummary(input: $workputinput)
-}
-
-mutation testChapterPut($chapterputinput: ChapterInput!) {
-  updateChapter(input: $chapterputinput)
-}
-
-mutation testWorkPost ($workUserIdPost: Int!, $workTitlePost: String!, $workSummaryPost: String!) {
-  createWork(workUserID: $workUserIdPost, workTitle: $workTitlePost, workSummary: $workSummaryPost)
-}
-
-mutation testChapterPost ($workIdPost: Int!, $chapterTitlePost: String!, $chapterTextPost: String!){
-  addChapter (workID: $workIdPost, chapterTitle: $chapterTitlePost, chapterText: $chapterTextPost)
-}
-
-query check($workID: Int!, $chapterID: Int!) {
-  work(workID: $workID) {
-    summary
-    title
-    id
-  }
-  chapter(chID: $chapterID) {
-    title
-    text
-  }
-}
-
-QUERY VARIABLES:
-
-{
-  "workputinput": {
-    "workID": 1,
-    "summary": "udyeah!"
-  },
-
-  "chapterputinput": {
-    "chapterID": 1,
-    "title": "new title",
-    "text": "inserted text"
-  },
-
-  "workUserIdPost": 1,
-  "workTitlePost": "work title post",
-  "workSummaryPost": "work Summary post",
-
-  "workIdPost": 2,
-  "chapterTitlePost": "chapter title post",
-  "chapterTextPost": "chapter text post",
-
-  "workID": 2,
-  "chapterID": 2
-}
-
- */
