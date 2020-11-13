@@ -24,6 +24,47 @@ export interface FetchUserContext {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: FetchChapter
+// ====================================================
+
+export interface FetchChapter_chapter {
+  __typename: "Chapter";
+  id: number;
+  text: string;
+  title: string | null;
+}
+
+export interface FetchChapter {
+  chapter: FetchChapter_chapter | null;
+}
+
+export interface FetchChapterVariables {
+  chID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ChapterUpdate
+// ====================================================
+
+export interface ChapterUpdate {
+  updateChapter: boolean;
+}
+
+export interface ChapterUpdateVariables {
+  input: ChapterInput;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchSurveys
 // ====================================================
 
@@ -199,16 +240,20 @@ export interface NextSurveyQuestionVariables {
 export interface FetchWork_work_user {
   __typename: "User";
   name: string;
+  id: number;
 }
 
 export interface FetchWork_work_chapters {
   __typename: "Chapter";
   id: number;
+  text: string;
+  title: string | null;
 }
 
 export interface FetchWork_work {
   __typename: "Work";
   title: string;
+  summary: string;
   user: FetchWork_work_user;
   chapters: FetchWork_work_chapters[];
 }
@@ -320,6 +365,12 @@ export interface SurveyQuestion {
 export enum UserType {
   ADMIN = "ADMIN",
   USER = "USER",
+}
+
+export interface ChapterInput {
+  chapterID: number;
+  title: string;
+  text: string;
 }
 
 export interface SurveyInput {
