@@ -1,23 +1,34 @@
 import { useQuery } from '@apollo/client'
 import { RouteComponentProps } from '@reach/router'
+// import useState next to FunctionComponent
 import * as React from 'react'
+import { useState } from 'react'
 import { ColorName, Colors } from '../../../../common/src/colors'
 import {
   FetchWork
 } from '../../graphql/query.gen'
+import { Button } from '../../style/button'
 import { H1, H2, H3, H5 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
+import { useUserContext } from '../auth/user'
 import { Chapter } from '../chapter/Chapter'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { fetchWork } from '../work/fetchWorks'
 import { Page } from './Page'
 
+
 interface pathParams {
   workID: number;
   chID: number;
+}
+
+interface Istate {
+  isEditing: Boolean;
+  // email:  string;
+  // password: string;
 }
 
 interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams { }
@@ -26,21 +37,31 @@ export function WorkPage(props: WorkPageProps) {
   const workID = Number(props.workID);
   const chID = Number(props.chID);
   //get the current user info
-  //const user = useUserContext().user;
+  const user = useUserContext().user;
   const { loading, data } = useQuery<FetchWork>(fetchWork, {
     variables: { workID },
   })
+  const [state, setState] = useState<Istate>({ isEditing: false });
+  // const [count, setCount] = useState(0);
   if (loading) {
     return <div>loading state</div>
   }
   if (data == null || data.work == null || data.work.user == null) {
     return <div>Work not Found</div>
   }
+  let isAuthor: Boolean = false
+  // let isEditing: Boolean = false
+  if (user?.id === data.work.user.id) {
+    isAuthor = true
+  }
 
-  console.log(props);//DEBUG
-  //console.log(user);//DEBUG
+  function switchEditingMode() {
+    setState({ ...state, isEditing: !state.isEditing })
+  }
+  // console.log(props);//DEBUG
+  // console.log(user);//DEBUG
   // console.log(data.work);//DEBUG
-  // console.log(data?.work?.user);
+  // console.log(data?.work?.user);//DEBUG
   return (
     <Page>
       <Hero>
@@ -50,7 +71,13 @@ export function WorkPage(props: WorkPageProps) {
       </Hero>
       <Content>
         <LContent>
-          <Chapter chID={chID} />
+          <Chapter chID={chID} isEditing={state.isEditing} switchFunc={switchEditingMode} />
+          {/* <Chapter chID={chID} isEditing={state.isEditing} /> */}
+          {isAuthor && !state.isEditing &&
+            <Button onClick={switchEditingMode}>
+              Edit
+            </Button>
+          }
         </LContent>
         <RContent>
           <Section>

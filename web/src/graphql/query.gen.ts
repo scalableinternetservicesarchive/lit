@@ -32,7 +32,7 @@ export interface FetchChapter_chapter {
   __typename: "Chapter";
   id: number;
   text: string;
-  title: string | null;
+  title: string;
 }
 
 export interface FetchChapter {
@@ -41,6 +41,23 @@ export interface FetchChapter {
 
 export interface FetchChapterVariables {
   chID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ChapterUpdate
+// ====================================================
+
+export interface ChapterUpdate {
+  updateChapter: boolean;
+}
+
+export interface ChapterUpdateVariables {
+  input: ChapterInput;
 }
 
 /* tslint:disable */
@@ -243,13 +260,14 @@ export interface WorkPostVariables {
 export interface FetchWork_work_user {
   __typename: "User";
   name: string;
+  id: number;
 }
 
 export interface FetchWork_work_chapters {
   __typename: "Chapter";
   id: number;
   text: string;
-  title: string | null;
+  title: string;
 }
 
 export interface FetchWork_work {
@@ -266,6 +284,32 @@ export interface FetchWork {
 
 export interface FetchWorkVariables {
   workID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: FetchWorks
+// ====================================================
+
+export interface FetchWorks_works_user {
+  __typename: "User";
+  name: string;
+}
+
+export interface FetchWorks_works {
+  __typename: "Work";
+  id: number;
+  title: string;
+  summary: string;
+  user: FetchWorks_works_user;
+}
+
+export interface FetchWorks {
+  works: FetchWorks_works[] | null;
 }
 
 /* tslint:disable */
@@ -367,6 +411,12 @@ export interface SurveyQuestion {
 export enum UserType {
   ADMIN = "ADMIN",
   USER = "USER",
+}
+
+export interface ChapterInput {
+  chapterID: number;
+  title: string;
+  text: string;
 }
 
 export interface SurveyInput {

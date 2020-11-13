@@ -18,18 +18,18 @@ const title = {
 }
 
 const otherTabs = [
-  {
-    name: 'lectures',
-    path: getPath(Route.LECTURES),
-  },
-  {
-    name: 'projects',
-    path: getPath(Route.PROJECTS),
-  },
-  {
-    name: 'playground',
-    path: getPath(Route.PLAYGROUND),
-  },
+  // {
+  //   name: 'lectures',
+  //   path: getPath(Route.LECTURES),
+  // },
+  // {
+  //   name: 'projects',
+  //   path: getPath(Route.PROJECTS),
+  // },
+  // {
+  //   name: 'playground',
+  //   path: getPath(Route.PLAYGROUND),
+  // },
   {
     name: 'login',
     path: getPath(Route.LOGIN),

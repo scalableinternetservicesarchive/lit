@@ -7,11 +7,26 @@ export const fetchWork = gql`
       summary
       user {
         name
+        id
       }
       chapters{
         id
-        text,
+        text
         title
+      }
+    }
+  }
+`
+
+
+export const fetchWorks = gql`
+  query FetchWorks {
+    works {
+      id
+      title
+      summary
+      user {
+        name
       }
     }
   }

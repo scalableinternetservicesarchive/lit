@@ -43,7 +43,7 @@ export interface WorkInput {
 export interface Chapter {
   __typename?: 'Chapter'
   id: Scalars['Int']
-  title?: Maybe<Scalars['String']>
+  title: Scalars['String']
   text: Scalars['String']
   work: Work
 }
@@ -63,6 +63,8 @@ export interface Query {
   users: Array<User>
   work?: Maybe<Work>
   chapter?: Maybe<Chapter>
+  targetWorks?: Maybe<Array<Work>>
+  works?: Maybe<Array<Work>>
 }
 
 export interface QuerySurveyArgs {
@@ -79,6 +81,10 @@ export interface QueryWorkArgs {
 
 export interface QueryChapterArgs {
   chID: Scalars['Int']
+}
+
+export interface QueryTargetWorksArgs {
+  targetWork: Scalars['String']
 }
 
 export interface Mutation {
@@ -312,7 +318,7 @@ export type ChapterResolvers<
   ParentType extends ResolversParentTypes['Chapter'] = ResolversParentTypes['Chapter']
 > = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
@@ -334,6 +340,13 @@ export type QueryResolvers<
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>
   work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryWorkArgs, 'workID'>>
   chapter?: Resolver<Maybe<ResolversTypes['Chapter']>, ParentType, ContextType, RequireFields<QueryChapterArgs, 'chID'>>
+  targetWorks?: Resolver<
+    Maybe<Array<ResolversTypes['Work']>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryTargetWorksArgs, 'targetWork'>
+  >
+  works?: Resolver<Maybe<Array<ResolversTypes['Work']>>, ParentType, ContextType>
 }
 
 export type MutationResolvers<
