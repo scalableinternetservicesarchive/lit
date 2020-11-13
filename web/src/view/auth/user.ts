@@ -9,3 +9,4 @@ export class UserCtx {
 }
 
 export const UserContext = React.createContext<UserCtx>(new UserCtx(null))
+export const useUserContext = () => React.useContext(UserContext);

@@ -193,6 +193,40 @@ export interface NextSurveyQuestionVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: FetchWork
+// ====================================================
+
+export interface FetchWork_work_user {
+  __typename: "User";
+  name: string;
+}
+
+export interface FetchWork_work_chapters {
+  __typename: "Chapter";
+  id: number;
+}
+
+export interface FetchWork_work {
+  __typename: "Work";
+  title: string;
+  user: FetchWork_work_user;
+  chapters: FetchWork_work_chapters[];
+}
+
+export interface FetchWork {
+  work: FetchWork_work | null;
+}
+
+export interface FetchWorkVariables {
+  workID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: Survey
 // ====================================================
 
