@@ -11,6 +11,7 @@ export interface FetchUserContext_self {
   __typename: "User";
   id: number;
   name: string;
+  email: string | null;
   userType: UserType;
 }
 
