@@ -1431,7 +1431,7 @@
             "description": null,
             "args": [
               {
-                "name": "workName",
+                "name": "targetWork",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -1449,9 +1449,13 @@
               "kind": "LIST",
               "name": null,
               "ofType": {
-                "kind": "OBJECT",
-                "name": "Work",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Work",
+                  "ofType": null
+                }
               }
             },
             "isDeprecated": false,

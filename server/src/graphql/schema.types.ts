@@ -63,7 +63,7 @@ export interface Query {
   users: Array<User>
   work?: Maybe<Work>
   chapter?: Maybe<Chapter>
-  works?: Maybe<Array<Maybe<Work>>>
+  works?: Maybe<Array<Work>>
 }
 
 export interface QuerySurveyArgs {
@@ -83,7 +83,7 @@ export interface QueryChapterArgs {
 }
 
 export interface QueryWorksArgs {
-  workName: Scalars['String']
+  targetWork: Scalars['String']
 }
 
 export interface Mutation {
@@ -340,10 +340,10 @@ export type QueryResolvers<
   work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryWorkArgs, 'workID'>>
   chapter?: Resolver<Maybe<ResolversTypes['Chapter']>, ParentType, ContextType, RequireFields<QueryChapterArgs, 'chID'>>
   works?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['Work']>>>,
+    Maybe<Array<ResolversTypes['Work']>>,
     ParentType,
     ContextType,
-    RequireFields<QueryWorksArgs, 'workName'>
+    RequireFields<QueryWorksArgs, 'targetWork'>
   >
 }
 
