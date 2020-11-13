@@ -112,6 +112,7 @@ type Query {
   users: [User!]!
   work(workID: Int!): Work
   chapter(chID: Int!): Chapter
+  works(workName: String!): [Work]
 }
 
 type Mutation {
