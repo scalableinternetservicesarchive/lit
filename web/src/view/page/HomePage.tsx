@@ -7,10 +7,11 @@ import { H1, H2, H3 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
-// import { Link } from '../nav/Link'
+import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { fetchWorks } from '../work/fetchWorks'
 import { Page } from './Page'
+// import {WorkPage} from './WorkPage'
 
 interface HomePageProps extends RouteComponentProps, AppRouteParams { }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,7 +48,7 @@ export function HomePage(props: HomePageProps) {
     const work_user_name = work.user.name
     workList.push(
       <Section key={work_id}>
-        <H2>{work_title} </H2>
+        <H2> <Link to={'work/' + work_id + '/0'}> {work_title} </Link> </H2> 
         <Spacer $h4 />
         <H3> by {work_user_name} </H3>
         <Spacer $h4 />
