@@ -48,6 +48,23 @@ export interface FetchChapterVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: ChapterUpdate
+// ====================================================
+
+export interface ChapterUpdate {
+  updateChapter: boolean;
+}
+
+export interface ChapterUpdateVariables {
+  input: ChapterInput;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchSurveys
 // ====================================================
 
@@ -314,6 +331,12 @@ export interface SurveyQuestion {
 export enum UserType {
   ADMIN = "ADMIN",
   USER = "USER",
+}
+
+export interface ChapterInput {
+  chapterID: number;
+  title: string;
+  text: string;
 }
 
 export interface SurveyInput {
