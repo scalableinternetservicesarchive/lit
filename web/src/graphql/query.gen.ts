@@ -227,6 +227,40 @@ export interface FetchWorkVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: FetchWorks
+// ====================================================
+
+export interface FetchWorks_work_user {
+  __typename: "User";
+  name: string;
+}
+
+export interface FetchWorks_work_chapters {
+  __typename: "Chapter";
+  id: number;
+}
+
+export interface FetchWorks_work {
+  __typename: "Work";
+  title: string;
+  user: FetchWorks_work_user;
+  chapters: FetchWorks_work_chapters[];
+}
+
+export interface FetchWorks {
+  work: FetchWorks_work | null;
+}
+
+export interface FetchWorksVariables {
+  workID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: Survey
 // ====================================================
 
