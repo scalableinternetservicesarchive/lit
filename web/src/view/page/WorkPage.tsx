@@ -71,8 +71,8 @@ export function WorkPage(props: WorkPageProps) {
       </Hero>
       <Content>
         <LContent>
-          {/* <Chapter chID={chID} isEditing={state.isEditing} switchFunc={switchEditingMode} /> */}
-          <Chapter chID={chID} isEditing={state.isEditing} />
+          <Chapter chID={chID} isEditing={state.isEditing} switchFunc={switchEditingMode} />
+          {/* <Chapter chID={chID} isEditing={state.isEditing} /> */}
           {isAuthor && !state.isEditing &&
             <Button onClick={switchEditingMode}>
               Edit

@@ -15,7 +15,7 @@ interface ChapterPropParams {
   // using `interface` is also ok
   chID: number;
   isEditing: Boolean;
-  // switchFunc: () => void;
+  switchFunc: () => void;
 };
 // interface ChapterProps extends RouteComponentProps<ChapterPropParams>, AppRouteParams { }
 
@@ -34,8 +34,8 @@ export function Chapter(props: ChapterPropParams) {
     return <div>Invalid Chapter</div>
   }
   if (isEditing) {
-    return <Button>Save</Button>
-    // return <Button onClick={props.switchFunc}>Save</Button>
+    // return <Button>Save</Button>
+    return <Button onClick={props.switchFunc}>Save</Button>
   }
   return (
     <Section>
