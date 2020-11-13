@@ -24,6 +24,7 @@ import { Session } from './entities/Session'
 import { User } from './entities/User'
 import { getSchema, graphqlRoot, pubsub } from './graphql/api'
 import { ConnectionManager } from './graphql/ConnectionManager'
+import { UserType } from './graphql/schema.types'
 import { expressLambdaProxy } from './lambda/handler'
 import { renderApp } from './render'
 
@@ -51,6 +52,29 @@ server.express.get('/app/*', (req, res) => {
   renderApp(req, res)
 })
 
+const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
+
+server.express.post(
+  '/auth/createUser',
+  asyncRoute(async (req, res) => {
+    console.log('POST /auth/createUser')
+    // create User model with data from HTTP request
+    let user = new User()
+    user.email = req.body.email
+    user.name = req.body.name
+    user.userType = UserType.User
+
+    // save the User model to the database, refresh `user` to get ID
+    user = await user.save()
+
+    const authToken = await createSession(user)
+    res
+      .status(200)
+      .cookie('authToken', authToken, { maxAge: SESSION_DURATION, path: '/', httpOnly: true, secure: Config.isProd })
+      .send('Success!')
+  })
+)
+
 server.express.post(
   '/auth/login',
   asyncRoute(async (req, res) => {
@@ -64,22 +88,34 @@ server.express.post(
       return
     }
 
-    const authToken = uuidv4()
+    // const authToken = uuidv4()
 
     await Session.delete({ user })
 
-    const session = new Session()
-    session.authToken = authToken
-    session.user = user
-    await Session.save(session).then(s => console.log('saved session ' + s.id))
+    // const session = new Session()
+    // session.authToken = authToken
+    // session.user = user
+    // await Session.save(session).then(s => console.log('saved session ' + s.id))
 
-    const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
+    // const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
+    const authToken = await createSession(user)
     res
       .status(200)
       .cookie('authToken', authToken, { maxAge: SESSION_DURATION, path: '/', httpOnly: true, secure: Config.isProd })
       .send('Success!')
   })
 )
+
+async function createSession(user: User): Promise<string> {
+  const authToken = uuidv4()
+
+  const session = new Session()
+  session.authToken = authToken
+  session.user = user
+  await Session.save(session).then(s => console.log('saved session ' + s.id))
+
+  return authToken
+}
 
 server.express.post(
   '/auth/logout',

@@ -11,9 +11,12 @@ import { fetchUser } from './auth/fetchUser'
 import { UserContext, UserCtx } from './auth/user'
 import { Route } from './nav/route'
 import { HomePage } from './page/HomePage'
+import { WorkPage } from './page/WorkPage'
 import { LecturesPage } from './page/LecturesPage'
+import { LoginPage } from './page/LoginPage'
 import { PlaygroundPage } from './page/PlaygroundPage'
 import { ProjectsPage } from './page/ProjectsPage'
+import { SignupPage } from './page/SignupPage'
 
 const Styletron = require('styletron-engine-monolithic')
 
@@ -53,8 +56,11 @@ export function AppBody() {
         <Redirect noThrow from="app" to="index" />
         <Redirect noThrow from="app/playground" to="surveys" />
         <HomePage path={Route.HOME} />
+        <WorkPage path={Route.WORK} />
         <LecturesPage path={Route.LECTURES} />
         <ProjectsPage path={Route.PROJECTS} />
+        <LoginPage path={Route.LOGIN} />
+        <SignupPage path={Route.SIGNUP} />
         <PlaygroundPage path={Route.PLAYGROUND} />
         <PlaygroundPage path={Route.PLAYGROUND_APP} />
       </Router>

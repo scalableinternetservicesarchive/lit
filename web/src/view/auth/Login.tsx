@@ -59,7 +59,7 @@ export function Login() {
         <Input $hasError={err.password} $onChange={setPassword} $onSubmit={login} name="password" type="password" />
       </div>
       <div className="mt3">
-        <Button onClick={login}>Sign Up</Button>
+        <Button onClick={login}>Sign In</Button>
       </div>
     </>
   )
@@ -97,7 +97,10 @@ function validate(
   setError: React.Dispatch<React.SetStateAction<{ email: boolean; password: boolean }>>
 ) {
   const validEmail = validateEmail(email)
-  const validPassword = Boolean(password)
+  let validPassword = false
+  if (password == 'password') {
+    validPassword = true
+  }
   console.log('valid', validEmail, validPassword)
   setError({ email: !validEmail, password: !validPassword })
   return validEmail && validPassword
