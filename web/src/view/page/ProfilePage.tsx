@@ -11,6 +11,7 @@ import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
 // import { fetchUserName } from '../auth/fetchUserName'
 import { useUserContext } from '../auth/user'
+import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { fetchWorksWritten } from '../work/fetchWorksWritten'
 import { CreateWork } from './CreateWork'
@@ -36,9 +37,10 @@ export function ProfilePage(props: ProfilePageProps) {
   if (loading) {
     return <div>loading state</div>
   }
-  if (data == null || data.user == null) {
+  if (data == null || data.user == null || data.user.works == null) {
     return <div>no data!</div>
   }
+  // console.log(data.user)
   return (
     <Page>
       <Headline>
@@ -59,7 +61,9 @@ export function ProfilePage(props: ProfilePageProps) {
           <tbody>
             {data.user.works?.map((work, i) => (
               <tr key={i}>
-                <TD>{work.title}</TD>
+                <TD>
+                  <Link to={'/work/' + work.id + '/'}> {work.title} </Link>
+                </TD>
               </tr>
             ))}
           </tbody>
