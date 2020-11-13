@@ -1427,7 +1427,7 @@
             "deprecationReason": null
           },
           {
-            "name": "works",
+            "name": "targetWorks",
             "description": null,
             "args": [
               {
@@ -1445,6 +1445,26 @@
                 "defaultValue": null
               }
             ],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Work",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "works",
+            "description": null,
+            "args": [],
             "type": {
               "kind": "LIST",
               "name": null,
