@@ -5,14 +5,16 @@ import { ColorName, Colors } from '../../../../common/src/colors'
 import {
   FetchWork
 } from '../../graphql/query.gen'
-import { H1, H2, H3 } from '../../style/header'
+import { H1, H2, H3, H5 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
+import { Chapter } from '../chapter/Chapter'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { fetchWork } from '../work/fetchWorks'
 import { Page } from './Page'
+
 interface pathParams {
   workID: number;
   chID: number;
@@ -21,9 +23,8 @@ interface pathParams {
 interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams { }
 
 export function WorkPage(props: WorkPageProps) {
-  // console.log(props);//DEBUG
   const workID = Number(props.workID);
-  const chID = props.chID;
+  const chID = Number(props.chID);
   //get the current user info
   //const user = useUserContext().user;
   const { loading, data } = useQuery<FetchWork>(fetchWork, {
@@ -33,27 +34,23 @@ export function WorkPage(props: WorkPageProps) {
     return <div>loading state</div>
   }
   if (data == null || data.work == null || data.work.user == null) {
-    return <div>no data!</div>
+    return <div>Work not Found</div>
   }
+
+  console.log(props);//DEBUG
   //console.log(user);//DEBUG
-  console.log(data.work);//DEBUG
-  console.log(data?.work?.user);
+  // console.log(data.work);//DEBUG
+  // console.log(data?.work?.user);
   return (
     <Page>
       <Hero>
         <H1>{data.work.title}</H1>
         <H3>{data.work.user.name}</H3>
-        <H3>Summary: testing {workID} {chID}</H3>
+        <H5>{data.work.summary}</H5>
       </Hero>
       <Content>
         <LContent>
-          <Section>
-            <H2>Chapter Title</H2>
-            <Spacer $h4 />
-            <BodyText>
-              Chapter Content
-            </BodyText>
-          </Section>
+          <Chapter chID={chID} />
         </LContent>
         <RContent>
           <Section>
@@ -62,19 +59,19 @@ export function WorkPage(props: WorkPageProps) {
             <BodyText>
               <table>
                 <tbody>
-                  <tr>
-                    <TD>Chapter 1</TD>
-                  </tr>
-                  <tr>
-                    <TD>
-                      <Link href="mailto://rothfels@cs.ucla.edu">Chapter 2</Link>
-                    </TD>
-                  </tr>
+                  {data.work?.chapters?.map((chapter, i) => (
+                    <tr key={i}>
+                      <TD>
+                        {/* <Link to={workID + "/" + chapter.id}> */}
+                        <Link to={"/" + chapter.id}>
+                          Chapter {i + 1}: {chapter.title}
+                        </Link>
+                      </TD>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </BodyText>
-          </Section>
-          <Section>
           </Section>
         </RContent>
       </Content>

@@ -24,6 +24,30 @@ export interface FetchUserContext {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: FetchChapter
+// ====================================================
+
+export interface FetchChapter_chapter {
+  __typename: "Chapter";
+  id: number;
+  text: string;
+  title: string | null;
+}
+
+export interface FetchChapter {
+  chapter: FetchChapter_chapter | null;
+}
+
+export interface FetchChapterVariables {
+  chID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchSurveys
 // ====================================================
 
@@ -204,11 +228,14 @@ export interface FetchWork_work_user {
 export interface FetchWork_work_chapters {
   __typename: "Chapter";
   id: number;
+  text: string;
+  title: string | null;
 }
 
 export interface FetchWork_work {
   __typename: "Work";
   title: string;
+  summary: string;
   user: FetchWork_work_user;
   chapters: FetchWork_work_chapters[];
 }
