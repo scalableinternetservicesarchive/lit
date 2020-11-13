@@ -43,7 +43,7 @@ export interface WorkInput {
 export interface Chapter {
   __typename?: 'Chapter'
   id: Scalars['Int']
-  title?: Maybe<Scalars['String']>
+  title: Scalars['String']
   text: Scalars['String']
   work: Work
 }
@@ -318,7 +318,7 @@ export type ChapterResolvers<
   ParentType extends ResolversParentTypes['Chapter'] = ResolversParentTypes['Chapter']
 > = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>

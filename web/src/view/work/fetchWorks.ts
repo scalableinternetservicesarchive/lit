@@ -17,3 +17,17 @@ export const fetchWork = gql`
     }
   }
 `
+
+
+export const fetchWorks = gql`
+  query FetchWorks {
+    works {
+      id
+      title
+      summary
+      user {
+        name
+      }
+    }
+  }
+`

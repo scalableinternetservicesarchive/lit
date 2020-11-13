@@ -31,7 +31,7 @@ export interface FetchChapter_chapter {
   __typename: "Chapter";
   id: number;
   text: string;
-  title: string | null;
+  title: string;
 }
 
 export interface FetchChapter {
@@ -247,7 +247,7 @@ export interface FetchWork_work_chapters {
   __typename: "Chapter";
   id: number;
   text: string;
-  title: string | null;
+  title: string;
 }
 
 export interface FetchWork_work {
@@ -275,29 +275,21 @@ export interface FetchWorkVariables {
 // GraphQL query operation: FetchWorks
 // ====================================================
 
-export interface FetchWorks_work_user {
+export interface FetchWorks_works_user {
   __typename: "User";
   name: string;
 }
 
-export interface FetchWorks_work_chapters {
-  __typename: "Chapter";
-  id: number;
-}
-
-export interface FetchWorks_work {
+export interface FetchWorks_works {
   __typename: "Work";
+  id: number;
   title: string;
-  user: FetchWorks_work_user;
-  chapters: FetchWorks_work_chapters[];
+  summary: string;
+  user: FetchWorks_works_user;
 }
 
 export interface FetchWorks {
-  work: FetchWorks_work | null;
-}
-
-export interface FetchWorksVariables {
-  workID: number;
+  works: FetchWorks_works[] | null;
 }
 
 /* tslint:disable */
