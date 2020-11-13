@@ -223,6 +223,7 @@ export interface NextSurveyQuestionVariables {
 export interface FetchWork_work_user {
   __typename: "User";
   name: string;
+  id: number;
 }
 
 export interface FetchWork_work_chapters {

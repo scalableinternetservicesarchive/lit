@@ -7,10 +7,11 @@ export const fetchWork = gql`
       summary
       user {
         name
+        id
       }
       chapters{
         id
-        text,
+        text
         title
       }
     }

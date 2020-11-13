@@ -4,6 +4,7 @@ import { ColorName, Colors } from '../../../../common/src/colors';
 import {
   FetchChapter
 } from '../../graphql/query.gen';
+import { Button } from '../../style/button';
 import { H2 } from '../../style/header';
 import { Spacer } from '../../style/spacer';
 import { style } from '../../style/styled';
@@ -13,20 +14,28 @@ import { fetchChapter } from './fetchChapter';
 interface ChapterPropParams {
   // using `interface` is also ok
   chID: number;
+  isEditing: Boolean;
+  // switchFunc: () => void;
 };
 // interface ChapterProps extends RouteComponentProps<ChapterPropParams>, AppRouteParams { }
 
 export function Chapter(props: ChapterPropParams) {
   const chID = props.chID;
+  const isEditing = props.isEditing;
+  console.log(isEditing);
   const { loading, data } = useQuery<FetchChapter>
     (fetchChapter, {
       variables: { chID },
     })
   if (loading) {
-    return <div>loading state</div>
+    return <div>loading...</div>
   }
   if (data == null) {
-    return <div>Work not Found</div>
+    return <div>Invalid Chapter</div>
+  }
+  if (isEditing) {
+    return <Button>Save</Button>
+    // return <Button onClick={props.switchFunc}>Save</Button>
   }
   return (
     <Section>
