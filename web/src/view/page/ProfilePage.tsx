@@ -62,7 +62,7 @@ export function ProfilePage(props: ProfilePageProps) {
             {data.user.works?.map((work, i) => (
               <tr key={i}>
                 <TD>
-                  <Link to={'/work/' + work.id + '/'}> {work.title} </Link>
+                  <Link to={'work/' + work.id + '/0'}> {work.title} </Link>
                 </TD>
               </tr>
             ))}

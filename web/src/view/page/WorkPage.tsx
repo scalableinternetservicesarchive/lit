@@ -62,8 +62,8 @@ export function WorkPage(props: WorkPageProps) {
                   {data.work?.chapters?.map((chapter, i) => (
                     <tr key={i}>
                       <TD>
-                        {/* <Link to={workID + "/" + chapter.id}> */}
-                        <Link to={"/" + chapter.id}>
+                        {/* <Link to={'work/' + workID + '/' + chapter.id}> */}
+                        <Link to={String(chapter.id)}>
                           Chapter {i + 1}: {chapter.title}
                         </Link>
                       </TD>
@@ -75,7 +75,7 @@ export function WorkPage(props: WorkPageProps) {
           </Section>
         </RContent>
       </Content>
-    </Page>
+    </Page >
   )
   // return (
   //   <Page>
