@@ -196,6 +196,11 @@ export interface NextSurveyQuestionVariables {
 // GraphQL query operation: FetchWork
 // ====================================================
 
+export interface FetchWork_work_user {
+  __typename: "User";
+  name: string;
+}
+
 export interface FetchWork_work_chapters {
   __typename: "Chapter";
   id: number;
@@ -204,6 +209,7 @@ export interface FetchWork_work_chapters {
 export interface FetchWork_work {
   __typename: "Work";
   title: string;
+  user: FetchWork_work_user;
   chapters: FetchWork_work_chapters[];
 }
 

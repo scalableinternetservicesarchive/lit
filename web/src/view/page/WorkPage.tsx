@@ -32,16 +32,17 @@ export function WorkPage(props: WorkPageProps) {
   if (loading) {
     return <div>loading state</div>
   }
-  if (data == null) {
+  if (data == null || data.work == null || data.work.user == null) {
     return <div>no data!</div>
   }
   //console.log(user);//DEBUG
-  //console.log(data.work);//DEBUG
+  console.log(data.work);//DEBUG
+  console.log(data?.work?.user);
   return (
     <Page>
       <Hero>
-        <H1>{data.work !== null ? data.work.title : ""}</H1>
-        <H3>Author Username</H3>
+        <H1>{data.work.title}</H1>
+        <H3>{data.work.user.name}</H3>
         <H3>Summary: testing {workID} {chID}</H3>
       </Hero>
       <Content>
