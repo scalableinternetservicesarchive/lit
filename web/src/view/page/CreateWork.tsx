@@ -16,12 +16,13 @@ interface CreateWorksProps extends RouteComponentProps, AppRouteParams {}
 
 export function CreateWork(props: CreateWorksProps) {
   const user = useUserContext().user
+  const [title, setTitle] = useState('')
+  const [summary, setSummary] = useState('')
+
   if (user == null) {
     return <div>Please log in</div>
   }
   const userID = user.id
-  const [title, setTitle] = useState('')
-  const [summary, setSummary] = useState('')
 
   function saveWork() {
     postWork(getApolloClient(), {
