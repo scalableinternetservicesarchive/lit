@@ -14,6 +14,7 @@ export enum Route {
   PLAYGROUND_APP = 'app/playground/:app',
   LOGIN = 'app/login',
   SIGNUP = 'app/signup',
+  CREATE = 'app/create',
 }
 
 export enum PlaygroundApp {

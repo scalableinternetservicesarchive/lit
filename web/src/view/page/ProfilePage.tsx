@@ -3,7 +3,6 @@ import { RouteComponentProps } from '@reach/router'
 import * as React from 'react'
 // import { Divider } from 'semantic-ui-react'
 import { FetchWorksWritten } from '../../graphql/query.gen'
-import { Button } from '../../style/button'
 // import { FetchUserName } from '../../graphql/query.gen'
 import { H1, H3 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
@@ -14,7 +13,6 @@ import { useUserContext } from '../auth/user'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { fetchWorksWritten } from '../work/fetchWorksWritten'
-import { CreateWork } from './CreateWork'
 import { Page } from './Page'
 
 interface ProfilePageProps extends RouteComponentProps, AppRouteParams {}
@@ -50,7 +48,7 @@ export function ProfilePage(props: ProfilePageProps) {
         <H3>{userEmail}</H3>
         <Spacer $h4 />
         <div className="mt3">
-          <Button onClick={routeCreate}>Create Work</Button>
+          <Link to={'create/'}> Create Work </Link>
         </div>
         <Spacer $h4 />
       </Headline>
@@ -62,7 +60,7 @@ export function ProfilePage(props: ProfilePageProps) {
             {data.user.works?.map((work, i) => (
               <tr key={i}>
                 <TD>
-                  <Link to={'/work/' + work.id + '/'}> {work.title} </Link>
+                  <Link to={'work/' + work.id + '/0'}> {work.title} </Link>
                 </TD>
               </tr>
             ))}
@@ -73,9 +71,9 @@ export function ProfilePage(props: ProfilePageProps) {
   )
 }
 
-function routeCreate() {
-  return <CreateWork />
-}
+// function createWork() {
+//   return <CreateWork />
+// }
 // function findWorks() {
 //   const user = useUserContext().user
 //   if (user == null) {

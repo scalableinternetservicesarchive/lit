@@ -218,6 +218,25 @@ export interface NextSurveyQuestionVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: WorkPost
+// ====================================================
+
+export interface WorkPost {
+  createWork: number | null;
+}
+
+export interface WorkPostVariables {
+  workUserIdPost: number;
+  workTitlePost: string;
+  workSummaryPost: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchWork
 // ====================================================
 
