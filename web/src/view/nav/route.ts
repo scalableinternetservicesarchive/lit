@@ -6,6 +6,7 @@
  */
 export enum Route {
   HOME = 'app/index',
+  WORK = 'app/work/:workID/:chID',
   LECTURES = 'app/lectures',
   PROJECTS = 'app/projects',
   PLAYGROUND = 'app/playground',
@@ -28,6 +29,10 @@ export function getSurveyPath(surveyId?: number) {
 export function getSignupPath() {
   return getPath(Route.PLAYGROUND_APP, { app: PlaygroundApp.SIGNUP })
 }
+// export function getWorkPath(workID?: number, chID?: number) {
+//   const path = getPath(Route.WORK, { workID: number, chID: number })
+//   return path + (surveyId ? `?surveyId=${surveyId}` : '')
+// }
 
 export function getLoginPath() {
   return getPath(Route.PLAYGROUND_APP, { app: PlaygroundApp.LOGIN })
@@ -81,3 +86,20 @@ export function routeParams(params: AppRouteParams) {
     app: params.app,
   }
 }
+
+// /**
+//  * Represents parameters parsed from URL routes, e.g. /work/1/2 parses workID=1, chID=2.
+//  */
+// export interface WorkRouteParams {
+//   workID?: number
+//   chID?: number
+// }
+// /**
+//  * Parses string route params into numbers. Values are 0 where undefined. Useful for converting URL parameters into GraphQL query variables.
+//  */
+// export function workRouteParams(params: WorkRouteParams) {
+//   return {
+//     workID: Number(params.workID || 0),
+//     chID: Number(params.workID || 0),
+//   }
+// }
