@@ -38,6 +38,10 @@ const otherTabs = [
     name: 'signup',
     path: getPath(Route.SIGNUP),
   },
+  {
+    name: 'My Profile',
+    path: getPath(Route.PROFILE),
+  },
 ]
 
 export function NavBar() {

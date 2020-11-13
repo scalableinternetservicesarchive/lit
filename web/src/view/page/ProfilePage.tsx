@@ -13,6 +13,7 @@ import { BodyText } from '../../style/text'
 import { useUserContext } from '../auth/user'
 import { AppRouteParams } from '../nav/route'
 import { fetchWorksWritten } from '../work/fetchWorksWritten'
+import { CreateWork } from './CreateWork'
 import { Page } from './Page'
 
 interface ProfilePageProps extends RouteComponentProps, AppRouteParams {}
@@ -42,11 +43,14 @@ export function ProfilePage(props: ProfilePageProps) {
     <Page>
       <Headline>
         <img src="/app/assets/user.jpeg" height="100" width="100"></img>
+        <Spacer $h4 />
         <H1>{userName}</H1>
         <H3>{userEmail}</H3>
+        <Spacer $h4 />
         <div className="mt3">
-          <Button onClick={createWork}>Create Work</Button>
+          <Button onClick={routeCreate}>Create Work</Button>
         </div>
+        <Spacer $h4 />
       </Headline>
       <H1> Your Works </H1>
       <Spacer $h4 />
@@ -65,7 +69,9 @@ export function ProfilePage(props: ProfilePageProps) {
   )
 }
 
-function createWork() {}
+function routeCreate() {
+  return <CreateWork />
+}
 // function findWorks() {
 //   const user = useUserContext().user
 //   if (user == null) {

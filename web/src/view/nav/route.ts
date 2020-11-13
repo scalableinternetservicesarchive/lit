@@ -9,6 +9,7 @@ export enum Route {
   WORK = 'app/work/:workID/:chID',
   LECTURES = 'app/lectures',
   PROJECTS = 'app/projects',
+  PROFILE = 'app/profile',
   PLAYGROUND = 'app/playground',
   PLAYGROUND_APP = 'app/playground/:app',
   LOGIN = 'app/login',
