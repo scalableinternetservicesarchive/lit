@@ -3,9 +3,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ColorName, Colors } from '../../../../common/src/colors';
 import { getApolloClient } from '../../graphql/apolloClient';
-import {
-  FetchChapter
-} from '../../graphql/query.gen';
+import { FetchChapter } from '../../graphql/query.gen';
 import { Button } from '../../style/button';
 import { H2 } from '../../style/header';
 import { Input } from '../../style/input';
@@ -33,18 +31,30 @@ export function Chapter(props: ChapterPropParams) {
   const chID = props.chID;
   const isEditing = props.isEditing;
   console.log(isEditing);
+
+  const [title, setTitle] = useState('')
+  const [text, setText] = useState('')
+
   const { loading, data } = useQuery<FetchChapter>
     (fetchChapter, {
       variables: { chID },
     })
+
+  React.useEffect(() => {
+    if (data) {
+      setTitle(data.chapter?.title || '')
+      setText(data.chapter?.text || '')
+    }
+  }, [data])
+
   if (loading) {
     return <div>loading...</div>
   }
   if (data == null) {
     return <div>Invalid Chapter</div>
   }
-  const [title, setTitle] = useState(data?.chapter?.title || '')
-  const [text, setText] = useState(data?.chapter?.text || '')
+
+
 
   // const [draft, setDraft] = useState<IChapterDraft>({
   //   title: data?.chapter?.title || "",
