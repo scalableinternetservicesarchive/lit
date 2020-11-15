@@ -1,6 +1,5 @@
 import { useQuery } from '@apollo/client'
-import { RouteComponentProps } from '@reach/router'
-// import useState next to FunctionComponent
+import { navigate, RouteComponentProps } from '@reach/router'
 import * as React from 'react'
 import { useState } from 'react'
 import { ColorName, Colors } from '../../../../common/src/colors'
@@ -19,7 +18,6 @@ import { AppRouteParams } from '../nav/route'
 import { fetchWork } from '../work/fetchWorks'
 import { Page } from './Page'
 
-
 interface pathParams {
   workID: number;
   chID: number;
@@ -27,6 +25,7 @@ interface pathParams {
 
 interface Istate {
   isEditing: Boolean;
+  isNew: Boolean;
   // email:  string;
   // password: string;
 }
@@ -35,33 +34,51 @@ interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams 
 
 export function WorkPage(props: WorkPageProps) {
   const workID = Number(props.workID);
-  const chID = Number(props.chID);
-  //get the current user info
-  const user = useUserContext().user;
+  const [state, setState] = useState<Istate>({ isEditing: false, isNew: false });
+  const [chID, setChID] = useState(Number(props.chID));
+  const [isAuthor, setIsAuthor] = useState(false);
+
+  const user = useUserContext().user; //get the current user info
   const { loading, data } = useQuery<FetchWork>(fetchWork, {
     variables: { workID },
   })
-  const [state, setState] = useState<Istate>({ isEditing: false });
-  // const [count, setCount] = useState(0);
+
+  React.useEffect(() => {
+    if (data) {
+      if (user?.id === data.work?.user.id) {
+        setIsAuthor(true)
+      }
+      console.log(data.work?.chapters)
+      // if (chID == 0 && data.work?.chapters.length != 0) {
+      //   setChID(Number(data.work?.chapters[0].id))
+      // }
+    }
+  }, [data])
+
+
+
+  function switchEditingMode() {
+    setState({ ...state, isEditing: !state.isEditing })
+  }
+
+  function editNewChapter() {
+    setState({ ...state, isNew: !state.isNew })
+  }
+
   if (loading) {
     return <div>loading state</div>
   }
   if (data == null || data.work == null || data.work.user == null) {
     return <div>Work not Found</div>
   }
-  let isAuthor: Boolean = false
-  // let isEditing: Boolean = false
-  if (user?.id === data.work.user.id) {
-    isAuthor = true
+  if (chID == 0) {
+    if (data.work?.chapters.length != 0) {
+      setChID(Number(data.work?.chapters[0].id))
+      // navigate(String(chID), { replace: true }) //won't work, not sure why
+      // return (<Redirect to={String(chID)} replace={true} />)
+    }
   }
 
-  function switchEditingMode() {
-    setState({ ...state, isEditing: !state.isEditing })
-  }
-  // console.log(props);//DEBUG
-  // console.log(user);//DEBUG
-  // console.log(data.work);//DEBUG
-  // console.log(data?.work?.user);//DEBUG
   return (
     <Page>
       <Hero>
@@ -71,9 +88,20 @@ export function WorkPage(props: WorkPageProps) {
       </Hero>
       <Content>
         <LContent>
-          <Chapter chID={chID} isEditing={state.isEditing} switchFunc={switchEditingMode} />
+          {chID == 0 ?
+            <Section>
+              {
+                isAuthor ?
+                  <H2>Use the "+" button to add a new chapter to this work.</H2>
+                  :
+                  <H2>There's no content yet.</H2>
+              }
+            </Section>
+            :
+            <Chapter chID={chID} isNew={state.isNew} isEditing={state.isEditing} switchFunc={switchEditingMode} />
+          }
           {/* <Chapter chID={chID} isEditing={state.isEditing} /> */}
-          {isAuthor && !state.isEditing &&
+          {isAuthor && !state.isEditing && !state.isNew &&
             <Button onClick={switchEditingMode}>
               Edit
             </Button>
@@ -83,14 +111,22 @@ export function WorkPage(props: WorkPageProps) {
           <Section>
             <H2>Menu</H2>
             <Spacer $h4 />
+            {isAuthor && !state.isEditing && !state.isNew &&
+              <Button onClick={editNewChapter}>
+                +
+              </Button>
+            }
             <BodyText>
               <table>
                 <tbody>
                   {data.work?.chapters?.map((chapter, i) => (
                     <tr key={i}>
                       <TD>
-                        {/* <Link to={'work/' + workID + '/' + chapter.id}> */}
-                        <Link to={String(chapter.id)}>
+                        <Link onClick={async () => {
+                          setChID(chapter.id)
+                          navigate(String(chapter.id), { replace: false })
+                        }}>
+                          {/* <Link to={String(chapter.id)} onClick={() => setChID(chapter.id)}> */}
                           Chapter {i + 1}: {chapter.title}
                         </Link>
                       </TD>

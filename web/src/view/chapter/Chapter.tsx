@@ -17,6 +17,7 @@ interface ChapterPropParams {
   // using `interface` is also ok
   chID: number;
   isEditing: Boolean;
+  isNew: Boolean;
   switchFunc: () => void;
 };
 
@@ -30,7 +31,7 @@ interface ChapterPropParams {
 export function Chapter(props: ChapterPropParams) {
   const chID = props.chID;
   const isEditing = props.isEditing;
-  console.log(isEditing);
+  const isNew = props.isNew;
 
   const [title, setTitle] = useState('')
   const [text, setText] = useState('')
@@ -44,22 +45,21 @@ export function Chapter(props: ChapterPropParams) {
     if (data) {
       setTitle(data.chapter?.title || '')
       setText(data.chapter?.text || '')
+      console.log(data)
+      console.log(chID) //DEBUG
     }
-  }, [data])
+  }, [data])//set only when data is available
 
-  if (loading) {
-    return <div>loading...</div>
+  function postNewChapter() {
+    updateChapter(getApolloClient(), {
+      chapterID: chID,
+      title: title,
+      text: text
+    }).then(() => {
+      props.switchFunc()
+    })
   }
-  if (data == null) {
-    return <div>Invalid Chapter</div>
-  }
 
-
-
-  // const [draft, setDraft] = useState<IChapterDraft>({
-  //   title: data?.chapter?.title || "",
-  //   text: data?.chapter?.text || ""
-  // });
   function saveDraft() {
     updateChapter(getApolloClient(), {
       chapterID: chID,
@@ -70,8 +70,17 @@ export function Chapter(props: ChapterPropParams) {
     })
   }
 
-  if (isEditing) {
-    // return <Button>Save</Button>
+  if (loading || data == null) {
+    return <div>loading...</div>
+  }
+  if (data.chapter == null) {
+    console.log("data is null")
+    return <div>Invalid Chapter</div>
+  }
+
+
+  if (isNew) {
+
     return (
       <Section>
         <Input
@@ -79,7 +88,7 @@ export function Chapter(props: ChapterPropParams) {
           name="title"
           value={title}
           $onChange={setTitle}
-          $onSubmit={saveDraft}
+          $onSubmit={postNewChapter}
         >
         </Input>
         <Spacer $h4 />
@@ -89,22 +98,55 @@ export function Chapter(props: ChapterPropParams) {
           onChange={(
             ev: React.ChangeEvent<HTMLTextAreaElement>,
           ): void => setText(ev.target.value)}
-          onSubmit={saveDraft}
+          onSubmit={postNewChapter}
         ></textarea>
         <Spacer $h4 />
-        <Button onClick={saveDraft}>Save</Button>
+        <Button onClick={postNewChapter}>Save</Button>
+      </Section>
+    );
+  } else {
+
+
+    // const [draft, setDraft] = useState<IChapterDraft>({
+    //   title: data?.chapter?.title || "",
+    //   text: data?.chapter?.text || ""
+    // });
+
+    if (isEditing) {
+      return (
+        <Section>
+          <Input
+            type="text"
+            name="title"
+            value={title}
+            $onChange={setTitle}
+            $onSubmit={saveDraft}
+          >
+          </Input>
+          <Spacer $h4 />
+          <textarea
+            name="text"
+            value={text}
+            onChange={(
+              ev: React.ChangeEvent<HTMLTextAreaElement>,
+            ): void => setText(ev.target.value)}
+            onSubmit={saveDraft}
+          ></textarea>
+          <Spacer $h4 />
+          <Button onClick={saveDraft}>Save</Button>
+        </Section>
+      );
+    }
+    return (
+      <Section>
+        <H2>{data.chapter?.title}</H2>
+        <Spacer $h4 />
+        <BodyText>
+          {data.chapter?.text}
+        </BodyText>
       </Section>
     );
   }
-  return (
-    <Section>
-      <H2>{data.chapter?.title}</H2>
-      <Spacer $h4 />
-      <BodyText>
-        {data.chapter?.text}
-      </BodyText>
-    </Section>
-  );
 }
 
 const Section = style('div', 'mb4 mid-gray ba b--mid-gray br2 pa3', (p: { $color?: ColorName }) => ({
