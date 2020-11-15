@@ -74,6 +74,7 @@ export interface Query {
   chapter?: Maybe<Chapter>
   targetWorks?: Maybe<Array<Work>>
   works?: Maybe<Array<Work>>
+  bookmark?: Maybe<Bookmark>
   bookmarks?: Maybe<Array<Bookmark>>
 }
 
@@ -97,8 +98,8 @@ export interface QueryTargetWorksArgs {
   targetWork: Scalars['String']
 }
 
-export interface QueryBookmarksArgs {
-  userID: Scalars['Int']
+export interface QueryBookmarkArgs {
+  bookmarkID: Scalars['Int']
 }
 
 export interface Mutation {
@@ -386,12 +387,13 @@ export type QueryResolvers<
     RequireFields<QueryTargetWorksArgs, 'targetWork'>
   >
   works?: Resolver<Maybe<Array<ResolversTypes['Work']>>, ParentType, ContextType>
-  bookmarks?: Resolver<
-    Maybe<Array<ResolversTypes['Bookmark']>>,
+  bookmark?: Resolver<
+    Maybe<ResolversTypes['Bookmark']>,
     ParentType,
     ContextType,
-    RequireFields<QueryBookmarksArgs, 'userID'>
+    RequireFields<QueryBookmarkArgs, 'bookmarkID'>
   >
+  bookmarks?: Resolver<Maybe<Array<ResolversTypes['Bookmark']>>, ParentType, ContextType>
 }
 
 export type MutationResolvers<

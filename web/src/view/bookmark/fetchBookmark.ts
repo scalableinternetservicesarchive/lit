@@ -1,13 +1,16 @@
-// import { gql } from '@apollo/client'
+import { gql } from '@apollo/client'
 
-// export const fetchBookmark = gql`
-//   query FetchBookmark($userID: Int!) {
-//     bookmarks(userID: $userID) {
-//       works {
-//         id
-//         user
-//         work
-//       }
-//     }
-//   }
-// `
+export const fetchBookmark = gql`
+  query FetchBookmark {
+    bookmarks {
+      id
+      user {
+        id
+      }
+      work {
+        title
+        id
+      }
+    }
+  }
+`

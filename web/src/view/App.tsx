@@ -10,6 +10,7 @@ import { style } from '../style/styled'
 import { fetchUser } from './auth/fetchUser'
 import { UserContext, UserCtx } from './auth/user'
 import { Route } from './nav/route'
+import { BookmarkPage } from './page/BookmarkPage'
 import { CreateWork } from './page/CreateWork'
 import { HomePage } from './page/HomePage'
 import { LecturesPage } from './page/LecturesPage'
@@ -65,6 +66,7 @@ export function AppBody() {
         <SignupPage path={Route.SIGNUP} />
         <ProfilePage path={Route.PROFILE} />
         <CreateWork path={Route.CREATE} />
+        <BookmarkPage path={Route.BOOKMARK} />
         <PlaygroundPage path={Route.PLAYGROUND} />
         <PlaygroundPage path={Route.PLAYGROUND_APP} />
       </Router>

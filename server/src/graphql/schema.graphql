@@ -122,8 +122,8 @@ type Query {
   chapter(chID: Int!): Chapter
   targetWorks(targetWork: String!): [Work!]
   works: [Work!]
-
-  bookmarks (userID: Int!): [Bookmark!]
+  bookmark (bookmarkID: Int!): Bookmark
+  bookmarks: [Bookmark!]
 
 }
 

@@ -41,11 +41,8 @@ export const graphqlRoot: Resolvers<Context> = {
     targetWorks: async (_, { targetWork }) => (await Work.find({ where: { title: targetWork } })) || null,
     // used to get all the works
     works: () => Work.find({ relations: ['user'] }),
-
-    bookmarks: async (_, { userID }) => {
-      const user = await User.findOne({ where: { id: userID }})
-      return user?.bookmarks || null
-    },
+    bookmark: async (_, { bookmarkID }) => (await Bookmark.findOne({ where: { id: bookmarkID }, relations: ['user', 'work'] })) || null,
+    bookmarks: () => Bookmark.find({ relations: ['user', 'work'] }),
     // TODO: tried executing the following, but it wouldn't work. It would work if I took out the "user {...},". How can we query user from work?
     // This is important because we need to learn how to access the user from the work
     // {

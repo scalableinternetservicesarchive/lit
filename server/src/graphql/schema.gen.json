@@ -1585,11 +1585,11 @@
             "deprecationReason": null
           },
           {
-            "name": "bookmarks",
+            "name": "bookmark",
             "description": null,
             "args": [
               {
-                "name": "userID",
+                "name": "bookmarkID",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -1603,6 +1603,18 @@
                 "defaultValue": null
               }
             ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Bookmark",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "bookmarks",
+            "description": null,
+            "args": [],
             "type": {
               "kind": "LIST",
               "name": null,
