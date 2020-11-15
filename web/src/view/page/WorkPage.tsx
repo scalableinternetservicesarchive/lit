@@ -18,25 +18,33 @@ import { AppRouteParams } from '../nav/route'
 import { fetchWork } from '../work/fetchWorks'
 import { Page } from './Page'
 
+export enum Mode {
+  VIEW,
+  EDIT,
+  ADDNEW
+}
+
 interface pathParams {
   workID: number;
   chID: number;
 }
 
-interface Istate {
-  isEditing: Boolean;
-  isNew: Boolean;
-  // email:  string;
-  // password: string;
-}
+// interface Imode {
+
+//   isEditing: Boolean;
+//   isNew: Boolean;
+//   // email:  string;
+//   // password: string;
+// }
 
 interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams { }
 
 export function WorkPage(props: WorkPageProps) {
   const workID = Number(props.workID);
-  const [state, setState] = useState<Istate>({ isEditing: false, isNew: false });
+  // const [state, setState] = useState<Istate>({ isEditing: false, isNew: false });
   const [chID, setChID] = useState(Number(props.chID));
   const [isAuthor, setIsAuthor] = useState(false);
+  const [mode, setMode] = useState(Mode.VIEW);
 
   const user = useUserContext().user; //get the current user info
   const { loading, data } = useQuery<FetchWork>(fetchWork, {
@@ -55,15 +63,15 @@ export function WorkPage(props: WorkPageProps) {
     }
   }, [data])
 
-
-
-  function switchEditingMode() {
-    setState({ ...state, isEditing: !state.isEditing })
+  function switchMode(mode: Mode) {
+    setMode(mode);
   }
-
-  function editNewChapter() {
-    setState({ ...state, isNew: !state.isNew })
+  function changeChapter(chID: number) {
+    setChID(chID);
   }
+  // function editNewChapter() {
+  //   setState({ ...state, isNew: !state.isNew })
+  // }
 
   if (loading) {
     return <div>loading state</div>
@@ -72,6 +80,7 @@ export function WorkPage(props: WorkPageProps) {
     return <div>Work not Found</div>
   }
   if (chID == 0) {
+    //If there's any chapter, set the chID to be the id of the first chapter
     if (data.work?.chapters.length != 0) {
       setChID(Number(data.work?.chapters[0].id))
       // navigate(String(chID), { replace: true }) //won't work, not sure why
@@ -98,11 +107,11 @@ export function WorkPage(props: WorkPageProps) {
               }
             </Section>
             :
-            <Chapter chID={chID} isNew={state.isNew} isEditing={state.isEditing} switchFunc={switchEditingMode} />
+            <Chapter workID={workID} chID={chID} mode={mode} switchMode={switchMode} setChID={changeChapter} />
           }
           {/* <Chapter chID={chID} isEditing={state.isEditing} /> */}
-          {isAuthor && !state.isEditing && !state.isNew &&
-            <Button onClick={switchEditingMode}>
+          {isAuthor && mode == Mode.VIEW &&
+            <Button onClick={() => switchMode(Mode.EDIT)}>
               Edit
             </Button>
           }
@@ -111,8 +120,8 @@ export function WorkPage(props: WorkPageProps) {
           <Section>
             <H2>Menu</H2>
             <Spacer $h4 />
-            {isAuthor && !state.isEditing && !state.isNew &&
-              <Button onClick={editNewChapter}>
+            {isAuthor && mode == Mode.VIEW &&
+              <Button onClick={() => switchMode(Mode.ADDNEW)}>
                 +
               </Button>
             }

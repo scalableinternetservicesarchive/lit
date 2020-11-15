@@ -10,15 +10,17 @@ import { Input } from '../../style/input';
 import { Spacer } from '../../style/spacer';
 import { style } from '../../style/styled';
 import { BodyText } from '../../style/text';
+import { Mode } from '../page/WorkPage';
 import { fetchChapter } from './fetchChapter';
-import { updateChapter } from './mutateChapter';
+import { postChapter, updateChapter } from './mutateChapter';
 
 interface ChapterPropParams {
   // using `interface` is also ok
+  workID: number;
   chID: number;
-  isEditing: Boolean;
-  isNew: Boolean;
-  switchFunc: () => void;
+  mode: Mode;
+  switchMode: (mode: Mode) => void;
+  setChID: (id: number) => void;
 };
 
 // interface IChapterDraft {
@@ -30,9 +32,10 @@ interface ChapterPropParams {
 
 export function Chapter(props: ChapterPropParams) {
   const chID = props.chID;
-  const isEditing = props.isEditing;
-  const isNew = props.isNew;
+  const workID = props.workID;
+  const mode = props.mode;
 
+  // const [chID, setChID] = useState(props.chID)
   const [title, setTitle] = useState('')
   const [text, setText] = useState('')
 
@@ -51,12 +54,14 @@ export function Chapter(props: ChapterPropParams) {
   }, [data])//set only when data is available
 
   function postNewChapter() {
-    updateChapter(getApolloClient(), {
-      chapterID: chID,
-      title: title,
-      text: text
-    }).then(() => {
-      props.switchFunc()
+    postChapter(getApolloClient(), {
+      workID: workID,
+      chapterTitle: title,
+      chapterText: text
+    }).then((res) => {
+      console.log(res.data?.addChapter)
+      props.setChID(Number(res.data?.addChapter))
+      props.switchMode(Mode.VIEW)
     })
   }
 
@@ -66,7 +71,7 @@ export function Chapter(props: ChapterPropParams) {
       title: title,
       text: text
     }).then(() => {
-      props.switchFunc()
+      props.switchMode(Mode.VIEW)
     })
   }
 
@@ -74,12 +79,11 @@ export function Chapter(props: ChapterPropParams) {
     return <div>loading...</div>
   }
   if (data.chapter == null) {
-    console.log("data is null")
     return <div>Invalid Chapter</div>
   }
 
 
-  if (isNew) {
+  if (mode == Mode.ADDNEW) {
 
     return (
       <Section>
@@ -101,7 +105,7 @@ export function Chapter(props: ChapterPropParams) {
           onSubmit={postNewChapter}
         ></textarea>
         <Spacer $h4 />
-        <Button onClick={postNewChapter}>Save</Button>
+        <Button onClick={postNewChapter}>Post</Button>
       </Section>
     );
   } else {
@@ -112,7 +116,7 @@ export function Chapter(props: ChapterPropParams) {
     //   text: data?.chapter?.text || ""
     // });
 
-    if (isEditing) {
+    if (mode == Mode.EDIT) {
       return (
         <Section>
           <Input
