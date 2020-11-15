@@ -40,7 +40,7 @@ export function HomePage(props: HomePageProps) {
   // console.log(data.works);
 
   const workList = []
-  for (let i = 0; i < data.works.length; i++) {
+  for (let i = data.works.length - 1; i >= 0; i--) {
     const work = data.works[i]
     const work_id = work.id
     const work_title = work.title
@@ -48,7 +48,7 @@ export function HomePage(props: HomePageProps) {
     const work_user_name = work.user.name
     workList.push(
       <Section key={work_id}>
-        <H2> <Link to={'work/' + work_id + '/0'}> {work_title} </Link> </H2> 
+        <H2> <Link to={'work/' + work_id + '/0'}> {work_title} </Link> </H2>
         <Spacer $h4 />
         <H3> by {work_user_name} </H3>
         <Spacer $h4 />
