@@ -97,20 +97,15 @@ export function WorkPage(props: WorkPageProps) {
       </Hero>
       <Content>
         <LContent>
-          {chID == 0 ?
+          {chID == 0 && !isAuthor ?
             <Section>
-              {
-                isAuthor ?
-                  <H2>Use the "+" button to add a new chapter to this work.</H2>
-                  :
-                  <H2>There's no content yet.</H2>
-              }
+              <H2>There's no content yet.</H2>
             </Section>
             :
             <Chapter workID={workID} chID={chID} mode={mode} switchMode={switchMode} setChID={changeChapter} />
           }
           {/* <Chapter chID={chID} isEditing={state.isEditing} /> */}
-          {isAuthor && mode == Mode.VIEW &&
+          {isAuthor && mode == Mode.VIEW && data.work?.chapters.length != 0 &&
             <Button onClick={() => switchMode(Mode.EDIT)}>
               Edit
             </Button>
@@ -133,6 +128,7 @@ export function WorkPage(props: WorkPageProps) {
                       <TD>
                         <Link onClick={async () => {
                           setChID(chapter.id)
+                          switchMode(Mode.VIEW)
                           navigate(String(chapter.id), { replace: false })
                         }}>
                           {/* <Link to={String(chapter.id)} onClick={() => setChID(chapter.id)}> */}

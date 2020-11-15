@@ -45,11 +45,15 @@ export function Chapter(props: ChapterPropParams) {
     })
 
   React.useEffect(() => {
-    if (data) {
+    if (data && mode != Mode.ADDNEW) {
       setTitle(data.chapter?.title || '')
       setText(data.chapter?.text || '')
-      console.log(data)
-      console.log(chID) //DEBUG
+      //console.log(data)
+      //console.log(chID) //DEBUG
+    }
+    if (mode == Mode.ADDNEW) {
+      setTitle('')
+      setText('')
     }
   }, [data])//set only when data is available
 
@@ -78,13 +82,21 @@ export function Chapter(props: ChapterPropParams) {
   if (loading || data == null) {
     return <div>loading...</div>
   }
+  // if (chID == 0 && mode != Mode.ADDNEW) {//will introduce bug
+  if (chID == 0) {//TODO: Enable adding new chapter for a new book (w/o any chapter)
+    return (
+      <Section>
+        <H2>Use the "+" button to add a new chapter to this work.</H2>
+      </Section>
+    )
+  }
   if (data.chapter == null) {
+    //TODO(checking for window object):alert("Invalid Chapter. Redirecting to the first chapter (if there exist one).");
+    props.setChID(0)
     return <div>Invalid Chapter</div>
   }
 
-
   if (mode == Mode.ADDNEW) {
-
     return (
       <Section>
         <Input
@@ -108,49 +120,43 @@ export function Chapter(props: ChapterPropParams) {
         <Button onClick={postNewChapter}>Post</Button>
       </Section>
     );
-  } else {
+  }
 
-
-    // const [draft, setDraft] = useState<IChapterDraft>({
-    //   title: data?.chapter?.title || "",
-    //   text: data?.chapter?.text || ""
-    // });
-
-    if (mode == Mode.EDIT) {
-      return (
-        <Section>
-          <Input
-            type="text"
-            name="title"
-            value={title}
-            $onChange={setTitle}
-            $onSubmit={saveDraft}
-          >
-          </Input>
-          <Spacer $h4 />
-          <textarea
-            name="text"
-            value={text}
-            onChange={(
-              ev: React.ChangeEvent<HTMLTextAreaElement>,
-            ): void => setText(ev.target.value)}
-            onSubmit={saveDraft}
-          ></textarea>
-          <Spacer $h4 />
-          <Button onClick={saveDraft}>Save</Button>
-        </Section>
-      );
-    }
+  if (mode == Mode.EDIT) {
     return (
       <Section>
-        <H2>{data.chapter?.title}</H2>
+        <Input
+          type="text"
+          name="title"
+          value={title}
+          $onChange={setTitle}
+          $onSubmit={saveDraft}
+        >
+        </Input>
         <Spacer $h4 />
-        <BodyText>
-          {data.chapter?.text}
-        </BodyText>
+        <textarea
+          name="text"
+          value={text}
+          onChange={(
+            ev: React.ChangeEvent<HTMLTextAreaElement>,
+          ): void => setText(ev.target.value)}
+          onSubmit={saveDraft}
+        ></textarea>
+        <Spacer $h4 />
+        <Button onClick={saveDraft}>Save</Button>
       </Section>
     );
   }
+  //mode == Mode.VIEW
+  return (
+    <Section>
+      <H2>{data.chapter?.title}</H2>
+      <Spacer $h4 />
+      <BodyText>
+        {data.chapter?.text}
+      </BodyText>
+    </Section>
+  );
 }
 
 const Section = style('div', 'mb4 mid-gray ba b--mid-gray br2 pa3', (p: { $color?: ColorName }) => ({
