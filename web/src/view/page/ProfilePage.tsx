@@ -52,7 +52,7 @@ export function ProfilePage(props: ProfilePageProps) {
         </div>
         <Spacer $h4 />
       </Headline>
-      <H1> Works </H1>
+      <H1> The Works </H1>
       <Spacer $h4 />
       <BodyText>
         <table>

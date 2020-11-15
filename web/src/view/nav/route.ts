@@ -15,6 +15,7 @@ export enum Route {
   LOGIN = 'app/login',
   SIGNUP = 'app/signup',
   CREATE = 'app/create',
+  BOOKMARK = 'app/bookmark',
 }
 
 export enum PlaygroundApp {
