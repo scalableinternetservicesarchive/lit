@@ -1,16 +1,20 @@
 import { useQuery } from '@apollo/client'
 import { RouteComponentProps } from '@reach/router'
 import * as React from 'react'
+import { getApolloClient } from '../../graphql/apolloClient'
 // import { Divider } from 'semantic-ui-react'
 import { FetchBookmark } from '../../graphql/query.gen'
+import { Button } from '../../style/button'
 import { H1 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
 import { useUserContext } from '../auth/user'
+import { delBookmark } from '../bookmark/deleteBookmark'
 import { fetchBookmark } from '../bookmark/fetchBookmark'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
+import { handleError } from '../toast/error'
 import { Page } from './Page'
 
 interface BookmarkPageProps extends RouteComponentProps, AppRouteParams {}
@@ -20,13 +24,19 @@ interface BookmarkPageProps extends RouteComponentProps, AppRouteParams {}
 export function BookmarkPage(props: BookmarkPageProps) {
   const user = useUserContext().user
   // let userName = 'Name'
-  // let userEmail = 'Email'
   if (user == null) {
     return <div>Please log in</div>
   }
   // const userName = user.name
   // const userEmail = user.email
   const userID = user.id
+  function eraseBookmark(id: any) {
+    delBookmark(getApolloClient(), {
+      bookmarkID: id,
+    })
+      .then(() => window.location.reload())
+      .catch(err => handleError(err))
+  }
   const { loading, data } = useQuery<FetchBookmark>(fetchBookmark)
   if (loading) {
     return <div>loading state</div>
@@ -39,11 +49,16 @@ export function BookmarkPage(props: BookmarkPageProps) {
     const bookmark = data.bookmarks[i]
     if (bookmark.user.id == userID) {
       userBookmarks.push(
-        <tr key={i}>
-          <TD>
-            <Link to={'work/' + bookmark.work.id + '/0'}> {bookmark.work.title} </Link>
-          </TD>
-        </tr>
+        <div key={i}>
+          <tr>
+            <TD>
+              <Link to={'work/' + bookmark.work.id + '/0'}> {bookmark.work.title}</Link>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <Button onClick={() => eraseBookmark(bookmark.id)}>Delete</Button>
+              <Spacer $h4 />
+            </TD>
+          </tr>
+        </div>
       )
     }
   }

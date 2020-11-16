@@ -25,6 +25,23 @@ export interface FetchUserContext {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: BookmarkDel
+// ====================================================
+
+export interface BookmarkDel {
+  deleteBookmark: boolean;
+}
+
+export interface BookmarkDelVariables {
+  bookmarkID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchBookmark
 // ====================================================
 
@@ -277,6 +294,23 @@ export interface WorkPostVariables {
   workUserIdPost: number;
   workTitlePost: string;
   workSummaryPost: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: WorkDel
+// ====================================================
+
+export interface WorkDel {
+  deleteWork: boolean;
+}
+
+export interface WorkDelVariables {
+  workID: number;
 }
 
 /* tslint:disable */

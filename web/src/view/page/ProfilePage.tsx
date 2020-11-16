@@ -14,6 +14,18 @@ import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { fetchWorksWritten } from '../work/fetchWorksWritten'
 import { Page } from './Page'
+import { delWork } from '../work/deleteWork'
+import { getApolloClient } from '../../graphql/apolloClient'
+import { handleError } from '../toast/error'
+import { Button } from '../../style/button'
+
+// to implement delete button:
+  // create delete<entity>.ts file where you copy and paste what is from deleteBookmark.ts and replace bookmark words with appropriate words
+  // run npm run gen
+  // copy and paste the eraseBookmark function format from deleteBookmrk.ts and BookmarkPage.tsx
+  // copy and paste html button code from BookmarkPage.tsx
+  // import the things necessary when given red squiggly underline errors
+  // then test
 
 interface ProfilePageProps extends RouteComponentProps, AppRouteParams {}
 
@@ -29,6 +41,13 @@ export function ProfilePage(props: ProfilePageProps) {
   const userName = user.name
   const userEmail = user.email
   const userID = user.id
+  function eraseWork(id: any) {
+    delWork(getApolloClient(), {
+      workID: id,
+    })
+      .then(() => window.location.reload())
+      .catch(err => handleError(err))
+  }
   const { loading, data } = useQuery<FetchWorksWritten>(fetchWorksWritten, {
     variables: { userID },
   })
@@ -61,6 +80,9 @@ export function ProfilePage(props: ProfilePageProps) {
               <tr key={i}>
                 <TD>
                   <Link to={'work/' + work.id + '/0'}> {work.title} </Link>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <Button onClick={() => eraseWork(work.id)}>Delete</Button>
+                  <Spacer $h4 />
                 </TD>
               </tr>
             ))}
