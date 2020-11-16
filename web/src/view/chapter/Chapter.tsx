@@ -10,14 +10,17 @@ import { Input } from '../../style/input';
 import { Spacer } from '../../style/spacer';
 import { style } from '../../style/styled';
 import { BodyText } from '../../style/text';
+import { Mode } from '../page/WorkPage';
 import { fetchChapter } from './fetchChapter';
-import { updateChapter } from './mutateChapter';
+import { postChapter, updateChapter } from './mutateChapter';
 
 interface ChapterPropParams {
   // using `interface` is also ok
+  workID: number;
   chID: number;
-  isEditing: Boolean;
-  switchFunc: () => void;
+  mode: Mode;
+  switchMode: (mode: Mode) => void;
+  setChID: (id: number) => void;
 };
 
 // interface IChapterDraft {
@@ -29,9 +32,10 @@ interface ChapterPropParams {
 
 export function Chapter(props: ChapterPropParams) {
   const chID = props.chID;
-  const isEditing = props.isEditing;
-  console.log(isEditing);
+  const workID = props.workID;
+  const mode = props.mode;
 
+  // const [chID, setChID] = useState(props.chID)
   const [title, setTitle] = useState('')
   const [text, setText] = useState('')
 
@@ -41,37 +45,76 @@ export function Chapter(props: ChapterPropParams) {
     })
 
   React.useEffect(() => {
-    if (data) {
+    if (data && chID != 0 && mode != Mode.ADDNEW) {
       setTitle(data.chapter?.title || '')
       setText(data.chapter?.text || '')
+      //console.log(data)
+      //console.log(chID) //DEBUG
     }
-  }, [data])
+    if (mode == Mode.ADDNEW) {
+      setTitle('')
+      setText('')
+    }
+  }, [data, props.mode])//set only when data is available
 
-  if (loading) {
-    return <div>loading...</div>
+  function postNewChapter() {
+    postChapter(getApolloClient(), {
+      workID: workID,
+      chapterTitle: title,
+      chapterText: text
+    }).then((res) => {
+      // console.log(res.data?.addChapter)//DEBUG
+      props.setChID(Number(res.data?.addChapter))
+      props.switchMode(Mode.VIEW)
+    })
   }
-  if (data == null) {
-    return <div>Invalid Chapter</div>
-  }
 
-
-
-  // const [draft, setDraft] = useState<IChapterDraft>({
-  //   title: data?.chapter?.title || "",
-  //   text: data?.chapter?.text || ""
-  // });
   function saveDraft() {
     updateChapter(getApolloClient(), {
       chapterID: chID,
       title: title,
       text: text
     }).then(() => {
-      props.switchFunc()
+      props.switchMode(Mode.VIEW)
     })
   }
 
-  if (isEditing) {
-    // return <Button>Save</Button>
+  if (loading || data == null) {
+    return <div>loading...</div>
+  }
+  if (chID != 0 && data.chapter == null) {
+    //TODO(checking for window object):alert("Invalid Chapter. Redirecting to the first chapter (if there exist one).");
+    props.setChID(0)
+    return <div>Invalid Chapter</div>
+  }
+
+  if (mode == Mode.ADDNEW) {
+    return (
+      <Section>
+        <Input
+          type="text"
+          name="title"
+          value={title}
+          $onChange={setTitle}
+          $onSubmit={postNewChapter}
+        >
+        </Input>
+        <Spacer $h4 />
+        <textarea
+          name="text"
+          value={text}
+          onChange={(
+            ev: React.ChangeEvent<HTMLTextAreaElement>,
+          ): void => setText(ev.target.value)}
+          onSubmit={postNewChapter}
+        ></textarea>
+        <Spacer $h4 />
+        <Button onClick={postNewChapter}>Post</Button>
+      </Section>
+    );
+  }
+
+  if (mode == Mode.EDIT) {
     return (
       <Section>
         <Input
@@ -96,8 +139,16 @@ export function Chapter(props: ChapterPropParams) {
       </Section>
     );
   }
+  //mode == Mode.VIEW
   return (
     <Section>
+      {/* When there's no chapters for a newly created work. */}
+      {
+        chID == 0 &&
+        <H2>
+          Use the "+" button to add a new chapter to this work.
+        </H2>
+      }
       <H2>{data.chapter?.title}</H2>
       <Spacer $h4 />
       <BodyText>

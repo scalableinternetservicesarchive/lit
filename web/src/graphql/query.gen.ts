@@ -97,6 +97,25 @@ export interface FetchChapterVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: ChapterPost
+// ====================================================
+
+export interface ChapterPost {
+  addChapter: number | null;
+}
+
+export interface ChapterPostVariables {
+  workID: number;
+  chapterTitle: string;
+  chapterText: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: ChapterUpdate
 // ====================================================
 

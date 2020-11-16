@@ -1,6 +1,5 @@
 import { useQuery } from '@apollo/client'
-import { RouteComponentProps } from '@reach/router'
-// import useState next to FunctionComponent
+import { navigate, RouteComponentProps } from '@reach/router'
 import * as React from 'react'
 import { useState } from 'react'
 import { ColorName, Colors } from '../../../../common/src/colors'
@@ -19,49 +18,80 @@ import { AppRouteParams } from '../nav/route'
 import { fetchWork } from '../work/fetchWorks'
 import { Page } from './Page'
 
+export enum Mode {
+  VIEW,
+  EDIT,
+  ADDNEW
+}
 
 interface pathParams {
   workID: number;
   chID: number;
 }
 
-interface Istate {
-  isEditing: Boolean;
-  // email:  string;
-  // password: string;
-}
+// interface Imode {
+
+//   isEditing: Boolean;
+//   isNew: Boolean;
+//   // email:  string;
+//   // password: string;
+// }
 
 interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams { }
 
 export function WorkPage(props: WorkPageProps) {
   const workID = Number(props.workID);
-  const chID = Number(props.chID);
-  //get the current user info
-  const user = useUserContext().user;
-  const { loading, data } = useQuery<FetchWork>(fetchWork, {
+  // const [state, setState] = useState<Istate>({ isEditing: false, isNew: false });
+  const [chID, setChID] = useState(Number(props.chID));
+  const [isAuthor, setIsAuthor] = useState(false);
+  const [mode, setMode] = useState(Mode.VIEW);
+
+  const user = useUserContext().user; //get the current user info
+  const { loading, data, refetch } = useQuery<FetchWork>(fetchWork, {
     variables: { workID },
   })
-  const [state, setState] = useState<Istate>({ isEditing: false });
-  // const [count, setCount] = useState(0);
+
+  React.useEffect(() => {
+    if (data) {
+      if (user?.id === data.work?.user.id) {
+        setIsAuthor(true)
+      }
+      // console.log(data.work?.chapters)//DEBUG
+      // if (chID == 0 && data.work?.chapters.length != 0) {
+      //   setChID(Number(data.work?.chapters[0].id))
+      // }
+    }
+  }, [data])
+
+  function switchMode(mode: Mode) {
+    setMode(mode);
+    //When mode gets switched back to VIEW -> refetch data
+    if (mode == Mode.VIEW) {
+      refetch()
+    }
+  }
+  function changeChapter(chID: number) {
+    setChID(chID);
+  }
+  // function editNewChapter() {
+  //   setState({ ...state, isNew: !state.isNew })
+  // }
+
   if (loading) {
     return <div>loading state</div>
   }
   if (data == null || data.work == null || data.work.user == null) {
     return <div>Work not Found</div>
   }
-  let isAuthor: Boolean = false
-  // let isEditing: Boolean = false
-  if (user?.id === data.work.user.id) {
-    isAuthor = true
+  if (chID == 0) {
+    //If there's any chapter, set the chID to be the id of the first chapter
+    if (data.work?.chapters.length != 0) {
+      setChID(Number(data.work?.chapters[0].id))
+      // navigate(String(chID), { replace: true }) //won't work, not sure why
+      // return (<Redirect to={String(chID)} replace={true} />)
+    }
   }
 
-  function switchEditingMode() {
-    setState({ ...state, isEditing: !state.isEditing })
-  }
-  // console.log(props);//DEBUG
-  // console.log(user);//DEBUG
-  // console.log(data.work);//DEBUG
-  // console.log(data?.work?.user);//DEBUG
   return (
     <Page>
       <Hero>
@@ -71,10 +101,16 @@ export function WorkPage(props: WorkPageProps) {
       </Hero>
       <Content>
         <LContent>
-          <Chapter chID={chID} isEditing={state.isEditing} switchFunc={switchEditingMode} />
+          {chID == 0 && !isAuthor ?
+            <Section>
+              <H2>There's no content yet.</H2>
+            </Section>
+            :
+            <Chapter workID={workID} chID={chID} mode={mode} switchMode={switchMode} setChID={changeChapter} />
+          }
           {/* <Chapter chID={chID} isEditing={state.isEditing} /> */}
-          {isAuthor && !state.isEditing &&
-            <Button onClick={switchEditingMode}>
+          {isAuthor && mode == Mode.VIEW && data.work?.chapters.length != 0 &&
+            <Button onClick={() => switchMode(Mode.EDIT)}>
               Edit
             </Button>
           }
@@ -83,14 +119,23 @@ export function WorkPage(props: WorkPageProps) {
           <Section>
             <H2>Menu</H2>
             <Spacer $h4 />
+            {isAuthor && mode == Mode.VIEW &&
+              <Button onClick={() => switchMode(Mode.ADDNEW)}>
+                +
+              </Button>
+            }
             <BodyText>
               <table>
                 <tbody>
                   {data.work?.chapters?.map((chapter, i) => (
                     <tr key={i}>
                       <TD>
-                        {/* <Link to={'work/' + workID + '/' + chapter.id}> */}
-                        <Link to={String(chapter.id)}>
+                        <Link onClick={async () => {
+                          setChID(chapter.id)
+                          switchMode(Mode.VIEW)
+                          navigate(String(chapter.id), { replace: false })
+                        }}>
+                          {/* <Link to={String(chapter.id)} onClick={() => setChID(chapter.id)}> */}
                           Chapter {i + 1}: {chapter.title}
                         </Link>
                       </TD>
