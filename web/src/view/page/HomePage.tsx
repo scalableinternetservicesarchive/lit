@@ -40,6 +40,12 @@ export function HomePage(props: HomePageProps) {
   // console.log(data.works);
 
   const workList = []
+  // TODO: FUTURE OPTIMIZATION
+  // let numOfFrontPageTitles = 10
+  // if (data.works.length < numOfFrontPageTitles) {
+  //   numOfFrontPageTitles = data.works.length
+  // }
+  // for (let i = numOfFrontPageTitles - 1; i >= 0; i--) {
   for (let i = data.works.length - 1; i >= 0; i--) {
     const work = data.works[i]
     const work_id = work.id
