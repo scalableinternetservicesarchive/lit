@@ -42,6 +42,10 @@ const otherTabs = [
     name: 'My Profile',
     path: getPath(Route.PROFILE),
   },
+  {
+    name: 'Bookmarks',
+    path: getPath(Route.BOOKMARK),
+  },
 ]
 
 export function NavBar() {

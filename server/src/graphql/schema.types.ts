@@ -19,6 +19,7 @@ export interface User {
   name: Scalars['String']
   email?: Maybe<Scalars['String']>
   works?: Maybe<Array<Work>>
+  bookmarks?: Maybe<Array<Bookmark>>
 }
 
 export enum UserType {
@@ -33,6 +34,7 @@ export interface Work {
   summary: Scalars['String']
   chapters: Array<Chapter>
   user: User
+  bookmarks?: Maybe<Array<Bookmark>>
 }
 
 export interface WorkInput {
@@ -45,6 +47,13 @@ export interface Chapter {
   id: Scalars['Int']
   title: Scalars['String']
   text: Scalars['String']
+  work: Work
+}
+
+export interface Bookmark {
+  __typename?: 'Bookmark'
+  id: Scalars['Int']
+  user: User
   work: Work
 }
 
@@ -65,6 +74,8 @@ export interface Query {
   chapter?: Maybe<Chapter>
   targetWorks?: Maybe<Array<Work>>
   works?: Maybe<Array<Work>>
+  bookmark?: Maybe<Bookmark>
+  bookmarks?: Maybe<Array<Bookmark>>
 }
 
 export interface QuerySurveyArgs {
@@ -87,6 +98,10 @@ export interface QueryTargetWorksArgs {
   targetWork: Scalars['String']
 }
 
+export interface QueryBookmarkArgs {
+  bookmarkID: Scalars['Int']
+}
+
 export interface Mutation {
   __typename?: 'Mutation'
   answerSurvey: Scalars['Boolean']
@@ -95,8 +110,10 @@ export interface Mutation {
   updateChapter: Scalars['Boolean']
   createWork?: Maybe<Scalars['Int']>
   addChapter?: Maybe<Scalars['Int']>
+  createBookmark: Scalars['Int']
   deleteWork: Scalars['Boolean']
   deleteChapter: Scalars['Boolean']
+  deleteBookmark: Scalars['Boolean']
 }
 
 export interface MutationAnswerSurveyArgs {
@@ -127,12 +144,21 @@ export interface MutationAddChapterArgs {
   chapterText: Scalars['String']
 }
 
+export interface MutationCreateBookmarkArgs {
+  userID: Scalars['Int']
+  workID: Scalars['Int']
+}
+
 export interface MutationDeleteWorkArgs {
   workID: Scalars['Int']
 }
 
 export interface MutationDeleteChapterArgs {
   chID: Scalars['Int']
+}
+
+export interface MutationDeleteBookmarkArgs {
+  bookmarkID: Scalars['Int']
 }
 
 export interface Subscription {
@@ -259,6 +285,7 @@ export type ResolversTypes = {
   Work: ResolverTypeWrapper<Work>
   WorkInput: WorkInput
   Chapter: ResolverTypeWrapper<Chapter>
+  Bookmark: ResolverTypeWrapper<Bookmark>
   ChapterInput: ChapterInput
   Query: ResolverTypeWrapper<{}>
   Mutation: ResolverTypeWrapper<{}>
@@ -278,6 +305,7 @@ export type ResolversParentTypes = {
   Work: Work
   WorkInput: WorkInput
   Chapter: Chapter
+  Bookmark: Bookmark
   ChapterInput: ChapterInput
   Query: {}
   Mutation: {}
@@ -298,6 +326,7 @@ export type UserResolvers<
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   works?: Resolver<Maybe<Array<ResolversTypes['Work']>>, ParentType, ContextType>
+  bookmarks?: Resolver<Maybe<Array<ResolversTypes['Bookmark']>>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
@@ -310,6 +339,7 @@ export type WorkResolvers<
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   chapters?: Resolver<Array<ResolversTypes['Chapter']>, ParentType, ContextType>
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>
+  bookmarks?: Resolver<Maybe<Array<ResolversTypes['Bookmark']>>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
@@ -320,6 +350,16 @@ export type ChapterResolvers<
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
+
+export type BookmarkResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Bookmark'] = ResolversParentTypes['Bookmark']
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>
   work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
@@ -347,6 +387,13 @@ export type QueryResolvers<
     RequireFields<QueryTargetWorksArgs, 'targetWork'>
   >
   works?: Resolver<Maybe<Array<ResolversTypes['Work']>>, ParentType, ContextType>
+  bookmark?: Resolver<
+    Maybe<ResolversTypes['Bookmark']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryBookmarkArgs, 'bookmarkID'>
+  >
+  bookmarks?: Resolver<Maybe<Array<ResolversTypes['Bookmark']>>, ParentType, ContextType>
 }
 
 export type MutationResolvers<
@@ -389,6 +436,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAddChapterArgs, 'workID' | 'chapterTitle' | 'chapterText'>
   >
+  createBookmark?: Resolver<
+    ResolversTypes['Int'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateBookmarkArgs, 'userID' | 'workID'>
+  >
   deleteWork?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -400,6 +453,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationDeleteChapterArgs, 'chID'>
+  >
+  deleteBookmark?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteBookmarkArgs, 'bookmarkID'>
   >
 }
 
@@ -455,6 +514,7 @@ export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>
   Work?: WorkResolvers<ContextType>
   Chapter?: ChapterResolvers<ContextType>
+  Bookmark?: BookmarkResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   Subscription?: SubscriptionResolvers<ContextType>

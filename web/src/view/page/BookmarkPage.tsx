@@ -1,92 +1,80 @@
 import { useQuery } from '@apollo/client'
 import { RouteComponentProps } from '@reach/router'
 import * as React from 'react'
+import { getApolloClient } from '../../graphql/apolloClient'
 // import { Divider } from 'semantic-ui-react'
-import { FetchWorksWritten } from '../../graphql/query.gen'
-// import { FetchUserName } from '../../graphql/query.gen'
-import { H1, H3 } from '../../style/header'
+import { FetchBookmark } from '../../graphql/query.gen'
+import { Button } from '../../style/button'
+import { H1 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
-// import { fetchUserName } from '../auth/fetchUserName'
 import { useUserContext } from '../auth/user'
+import { delBookmark } from '../bookmark/deleteBookmark'
+import { fetchBookmark } from '../bookmark/fetchBookmark'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
-import { fetchWorksWritten } from '../work/fetchWorksWritten'
-import { Page } from './Page'
-import { delWork } from '../work/deleteWork'
-import { getApolloClient } from '../../graphql/apolloClient'
 import { handleError } from '../toast/error'
-import { Button } from '../../style/button'
+import { Page } from './Page'
 
-// to implement delete button:
-  // create delete<entity>.ts file where you copy and paste what is from deleteBookmark.ts and replace bookmark words with appropriate words
-  // run npm run gen
-  // copy and paste the eraseBookmark function format from deleteBookmrk.ts and BookmarkPage.tsx
-  // copy and paste html button code from BookmarkPage.tsx
-  // import the things necessary when given red squiggly underline errors
-  // then test
-
-interface ProfilePageProps extends RouteComponentProps, AppRouteParams {}
+interface BookmarkPageProps extends RouteComponentProps, AppRouteParams {}
 
 // const DividerExampleDivider = () => <Divider />
 
-export function ProfilePage(props: ProfilePageProps) {
+export function BookmarkPage(props: BookmarkPageProps) {
   const user = useUserContext().user
   // let userName = 'Name'
-  // let userEmail = 'Email'
   if (user == null) {
     return <div>Please log in</div>
   }
-  const userName = user.name
-  const userEmail = user.email
+  // const userName = user.name
+  // const userEmail = user.email
   const userID = user.id
-  function eraseWork(id: any) {
-    delWork(getApolloClient(), {
-      workID: id,
+  function eraseBookmark(id: any) {
+    delBookmark(getApolloClient(), {
+      bookmarkID: id,
     })
       .then(() => window.location.reload())
       .catch(err => handleError(err))
   }
-  const { loading, data } = useQuery<FetchWorksWritten>(fetchWorksWritten, {
-    variables: { userID },
-  })
+  const { loading, data } = useQuery<FetchBookmark>(fetchBookmark)
   if (loading) {
     return <div>loading state</div>
   }
-  if (data == null || data.user == null || data.user.works == null) {
+  if (data == null || data.bookmarks == null) {
     return <div>no data!</div>
+  }
+  const userBookmarks = []
+  for (let i = 0; i < data.bookmarks.length; i++) {
+    const bookmark = data.bookmarks[i]
+    if (bookmark.user.id == userID) {
+      userBookmarks.push(
+        <div key={i}>
+          <tr>
+            <TD>
+              <Link to={'work/' + bookmark.work.id + '/0'}> {bookmark.work.title}</Link>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <Button onClick={() => eraseBookmark(bookmark.id)}>Delete</Button>
+              <Spacer $h4 />
+            </TD>
+          </tr>
+        </div>
+      )
+    }
   }
   // console.log(data.user)
   return (
     <Page>
       <Headline>
-        <img src="/app/assets/user.jpeg" height="100" width="100"></img>
-        <Spacer $h4 />
-        <H1>{userName}</H1>
-        <H3>{userEmail}</H3>
-        <Spacer $h4 />
-        <div className="mt3">
-          <Link to={'create/'}> Create Work </Link>
-        </div>
+        {/* <H1>{userName}</H1>
+        <H3>{userEmail}</H3> */}
         <Spacer $h4 />
       </Headline>
-      <H1> The Works </H1>
+      <H1> Bookmarks </H1>
       <Spacer $h4 />
       <BodyText>
         <table>
-          <tbody>
-            {data.user.works?.map((work, i) => (
-              <tr key={i}>
-                <TD>
-                  <Link to={'work/' + work.id + '/0'}> {work.title} </Link>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <Button onClick={() => eraseWork(work.id)}>Delete</Button>
-                  <Spacer $h4 />
-                </TD>
-              </tr>
-            ))}
-          </tbody>
+          <tbody>{userBookmarks}</tbody>
         </table>
       </BodyText>
     </Page>
@@ -150,3 +138,19 @@ const TD = style('td', 'pa1', p => ({
 // const TD = style('td', 'pa1', p => ({
 //   color: p.$theme.textColor(),
 // }))
+
+// import { RouteComponentProps } from '@reach/router'
+// // import { RouteComponentProps } from '@reach/router'
+// import * as React from 'react'
+// import { Login } from '../auth/Login'
+// import { AppRouteParams } from '../nav/route'
+// // import { AppRouteParams, PlaygroundApp } from '../nav/route'
+// // import { Surveys } from '../playground/Surveys'
+// import { Page } from './Page'
+
+// // IF NO PROPS, APP.TSX GIVES SOME ERROR ABOUT INTRINSIC TYPE
+// interface LoginPageProps extends RouteComponentProps, AppRouteParams {}
+
+// export function BookmarkPage(props: LoginPageProps) {
+//   return <Page>{<Login />}</Page>
+//

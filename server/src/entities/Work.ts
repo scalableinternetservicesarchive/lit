@@ -1,6 +1,17 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import { Chapter } from "./Chapter"
-import { User } from "./User"
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm'
+import { Bookmark } from './Bookmark'
+import { Chapter } from './Chapter'
+import { User } from './User'
+
 @Entity()
 export class Work extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -33,4 +44,6 @@ export class Work extends BaseEntity {
   @OneToMany(() => Chapter, chapter => chapter.work, { eager: true })
   chapters: Chapter[]
 
+  @OneToMany(() => Bookmark, bookmark => bookmark.work, { eager: true })
+  bookmarks: Bookmark[]
 }

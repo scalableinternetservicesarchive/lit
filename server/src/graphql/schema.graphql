@@ -23,6 +23,7 @@ type User {
   name: String!
   email: String
   works: [Work!]
+  bookmarks: [Bookmark!]
   # NOTE:
     # exclamation point inside bracket means all elements within array are not null
     # exclamation point outside bracket means array cannot be null
@@ -53,6 +54,7 @@ type Work {
   summary: String!
   chapters: [Chapter!]!
   user: User!
+  bookmarks: [Bookmark!]
 }
 
 # NOTE: we don't have to have a chapterid but it is much clearer to have one so that it doesn't increment too quickly in relation to the work
@@ -95,6 +97,12 @@ type Chapter {
   work: Work!
 }
 
+type Bookmark {
+  id: Int!
+  user: User!
+  work: Work!
+}
+
 input ChapterInput {
   chapterID: Int!
   title: String!
@@ -114,6 +122,9 @@ type Query {
   chapter(chID: Int!): Chapter
   targetWorks(targetWork: String!): [Work!]
   works: [Work!]
+  bookmark (bookmarkID: Int!): Bookmark
+  bookmarks: [Bookmark!]
+
 }
 
 type Mutation {
@@ -133,11 +144,17 @@ type Mutation {
   # Returns new chapter ID
   addChapter(workID: Int!, chapterTitle: String!, chapterText: String!): Int
 
+  # Returns bookmark id
+  createBookmark (userID: Int!, workID: Int!): Int!
+
   # Delete the work with workID
   deleteWork(workID: Int!): Boolean!
 
   # Delete the chapter with chapterID
   deleteChapter(chID: Int!): Boolean!
+
+  # Delete bookmark with userID and workID
+  deleteBookmark (bookmarkID: Int!): Boolean!
 }
 
 

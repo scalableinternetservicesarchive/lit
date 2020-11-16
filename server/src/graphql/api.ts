@@ -3,6 +3,7 @@ import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import path from 'path'
 import { check } from '../../../common/src/util'
+import { Bookmark } from '../entities/Bookmark'
 import { Chapter } from '../entities/Chapter'
 import { Survey } from '../entities/Survey'
 import { SurveyAnswer } from '../entities/SurveyAnswer'
@@ -39,8 +40,9 @@ export const graphqlRoot: Resolvers<Context> = {
     // used to get the works for the search bar
     targetWorks: async (_, { targetWork }) => (await Work.find({ where: { title: targetWork } })) || null,
     // used to get all the works
-    works: () => Work.find({relations: ['user']}),
-
+    works: () => Work.find({ relations: ['user'] }),
+    bookmark: async (_, { bookmarkID }) => (await Bookmark.findOne({ where: { id: bookmarkID }, relations: ['user', 'work'] })) || null,
+    bookmarks: () => Bookmark.find({ relations: ['user', 'work'] }),
     // TODO: tried executing the following, but it wouldn't work. It would work if I took out the "user {...},". How can we query user from work?
     // This is important because we need to learn how to access the user from the work
     // {
@@ -94,7 +96,7 @@ export const graphqlRoot: Resolvers<Context> = {
     updateSummary: async (_, { input }, ctx) => {
       const { summary, workID } = input
       const targetWork = check(await Work.findOne({ where: { id: workID } }))
-      var newWork = targetWork
+      const newWork = targetWork
       newWork.summary = summary
       await newWork.save()
 
@@ -103,7 +105,7 @@ export const graphqlRoot: Resolvers<Context> = {
     updateChapter: async (_, { input }, ctx) => {
       const { title, text, chapterID } = input
       const targetChapter = check(await Chapter.findOne({ where: { id: chapterID } }))
-      var newChapter = targetChapter
+      const newChapter = targetChapter
       newChapter.title = title
       newChapter.text = text
       await newChapter.save()
@@ -132,21 +134,75 @@ export const graphqlRoot: Resolvers<Context> = {
       await chapter.save()
       return chapter.id
     },
+    createBookmark: async (_, { userID, workID }, ctx) => {
+      // const bookmarkCheck  = await Bookmark.findOne ({where: { userId: userID, workId: workID }, relations: ['user', 'work']}) || null
+      // get the possible owner of bookmark
+      // const bookmarkOwnerCheck = await User.findOne({ where: { id: userID }, relations: ['works'] }) || null
+      // if (bookmarkOwnerCheck != null) {
+      //   const workBookmarkedCheck = await Work.findOne({ where: { id: workID } }) || null
+      //   if (workBookmarkedCheck != null ) {
+      //     // // if we're not able to find a bookmark using work_id, then continue with creating the boookmark
+      //     const bookmarks = bookmarkOwnerCheck.bookmarks
+      //     console.log ("BOOKMARKS")
+      //     console.log (bookmarks)
+      //     // // loop through all the bookmarks of the user
+      //     for (let i = 0; i < bookmarks.length; i++) {
+      //       console.log ("bookmarks.length")
+      //       console.log (bookmarks.length)
+      //       console.log ("bookmarks[i]")
+      //       console.log (bookmarks[i])
+      //       const bookmark = bookmarks[i]
+      //       // check if there are any bookmarks related to the work we are trying to make a bookmark for
+      //       if (bookmark.work == workBookmarkedCheck) {
+      //         console.log ("gets in here")
+      //         return bookmark.id
+      //       }
+      //       console.log ("BOOKMARK WORK")
+      //       console.log (bookmark.work)
+      //       console.log ("WORK BOOKMARKED CHECK")
+      //       console.log (workBookmarkedCheck)
+      //     }
+      //   }
+      // }
+      // console.log (bookmarkOwnerCheck)
+      // console.log (bookmarks)
+
+
+      // get the work that we want to add the bookmark to
+      const workBookmarked = check(await Work.findOne({ where: { id: workID } }))
+      // get the owner of the bookmark
+      const bookmarkOwner = check(await User.findOne({ where: { id: userID } }))
+      // create a new bookmark
+      const bookmark = new Bookmark()
+      // assign the user to the bookmark
+      bookmark.user = bookmarkOwner
+      // assign the work to the bookmark
+      bookmark.work = workBookmarked
+
+      await bookmark.save()
+      return bookmark.id
+    },
+    deleteBookmark: async (_, { bookmarkID }) => {
+      const bookmark = check(await Bookmark.findOne({ where: { id: bookmarkID } }))
+      await bookmark.remove()
+
+      return true
+    },
     deleteWork: async (_, { workID }) => {
       const targetWork = check(await Work.findOne({ where: { id: workID } }))
       const targetChapters = check(await Chapter.find({ where: { work: targetWork } }))
       //delete all related chapters first
-      for (let chapter of targetChapters) {
+      for (const chapter of targetChapters) {
         await chapter.remove()
       }
       //delete the work
       await targetWork.remove()
-      return true;
+      return true
     },
     deleteChapter: async (_, { chID }) => {
       const targetChapter = check(await Chapter.findOne({ where: { id: chID } }))
       await targetChapter.remove()
-      return true;
+      return true
     },
   },
   Subscription: {

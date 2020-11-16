@@ -14,7 +14,12 @@ import { postWork } from '../work/createWork'
 
 interface CreateWorksProps extends RouteComponentProps, AppRouteParams {}
 
+// interface pathParams {
+//   workID: number
+// }
+
 export function CreateWork(props: CreateWorksProps) {
+  // const workID = Number(props.workID)
   const user = useUserContext().user
   const [title, setTitle] = useState('')
   const [summary, setSummary] = useState('')
@@ -29,7 +34,9 @@ export function CreateWork(props: CreateWorksProps) {
       workUserIdPost: userID,
       workTitlePost: title,
       workSummaryPost: summary,
-    }).catch(err => handleError(err))
+    })
+      .then(() => window.location.replace('/app/profile'))
+      .catch(err => handleError(err))
   }
 
   return (
