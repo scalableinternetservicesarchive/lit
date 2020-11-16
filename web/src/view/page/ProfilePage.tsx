@@ -81,7 +81,7 @@ export function ProfilePage(props: ProfilePageProps) {
                 <TD>
                   <Link to={'work/' + work.id + '/0'}> {work.title} </Link>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <Button onClick={() => eraseWork(work.id)}>Delete</Button>
+                  <Button onClick={() => eraseWork(work.id)}> I Am Not Proud of This Work Anymore. DELETE IT PLS. </Button>
                   <Spacer $h4 />
                 </TD>
               </tr>

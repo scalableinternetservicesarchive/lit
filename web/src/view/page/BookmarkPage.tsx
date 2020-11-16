@@ -54,7 +54,7 @@ export function BookmarkPage(props: BookmarkPageProps) {
             <TD>
               <Link to={'work/' + bookmark.work.id + '/0'}> {bookmark.work.title}</Link>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <Button onClick={() => eraseBookmark(bookmark.id)}>Delete</Button>
+              <Button onClick={() => eraseBookmark(bookmark.id)}> I No Longer Love This Work Enough To Bookmark It. REMOVE IT PLS. </Button>
               <Spacer $h4 />
             </TD>
           </tr>
