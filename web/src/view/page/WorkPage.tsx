@@ -3,15 +3,14 @@ import { navigate, RouteComponentProps } from '@reach/router'
 import * as React from 'react'
 import { useState } from 'react'
 import { ColorName, Colors } from '../../../../common/src/colors'
-import {
-  FetchWork
-} from '../../graphql/query.gen'
+import { FetchBookmark, FetchWork } from '../../graphql/query.gen'
 import { Button } from '../../style/button'
 import { H1, H2, H3, H5 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
 import { useUserContext } from '../auth/user'
+import { fetchBookmark } from '../bookmark/fetchBookmark'
 import { Chapter } from '../chapter/Chapter'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
@@ -29,6 +28,16 @@ interface pathParams {
   chID: number;
 }
 
+interface bookMark {
+  work: {
+    title: string;
+    id: number;
+  };
+  user: {
+    id: number;
+  };
+  id: number;
+}
 // interface Imode {
 
 //   isEditing: Boolean;
@@ -44,12 +53,18 @@ export function WorkPage(props: WorkPageProps) {
   // const [state, setState] = useState<Istate>({ isEditing: false, isNew: false });
   const [chID, setChID] = useState(Number(props.chID));
   const [isAuthor, setIsAuthor] = useState(false);
+  const [bookmarked, setBookmark] = useState(false);
   const [mode, setMode] = useState(Mode.VIEW);
 
   const user = useUserContext().user; //get the current user info
   const { loading, data, refetch } = useQuery<FetchWork>(fetchWork, {
     variables: { workID },
   })
+  const { data: dataBookmarks, loading: loadingB } = useQuery<FetchBookmark>(fetchBookmark)
+  // function targetBookmark(element, index, array) {
+  function targetBookmark(element: bookMark) {
+    return (element.user.id == user?.id && element.work.id == workID);
+  }
 
   React.useEffect(() => {
     if (data) {
@@ -61,7 +76,13 @@ export function WorkPage(props: WorkPageProps) {
       //   setChID(Number(data.work?.chapters[0].id))
       // }
     }
-  }, [data])
+    var passed = []
+    if (dataBookmarks?.bookmarks) {
+      // console.log(dataBookmarks)
+      passed = dataBookmarks.bookmarks.filter(targetBookmark);
+    }
+    setBookmark(passed.length > 0)
+  }, [data, dataBookmarks])
 
   function switchMode(mode: Mode) {
     setMode(mode);
@@ -73,11 +94,19 @@ export function WorkPage(props: WorkPageProps) {
   function changeChapter(chID: number) {
     setChID(chID);
   }
+  function addBookmark() {
+    //TODO: implement the actual mutation
+    console.log("Adding to bookmark")
+  }
+  function deleteBookmark() {
+    //TODO: implement the actual mutation
+    console.log("Deleting the bookmark")
+  }
   // function editNewChapter() {
   //   setState({ ...state, isNew: !state.isNew })
   // }
 
-  if (loading) {
+  if (loading || loadingB) {
     return <div>loading state</div>
   }
   if (data == null || data.work == null || data.work.user == null) {
@@ -97,6 +126,15 @@ export function WorkPage(props: WorkPageProps) {
       <Hero>
         <H1>{data.work.title}</H1>
         <H3>{data.work.user.name}</H3>
+        <Spacer $h4 />
+        {
+          mode == Mode.VIEW && !bookmarked &&
+          <Button onClick={addBookmark}>Bookmark This Work</Button>
+        }
+        {
+          mode == Mode.VIEW && bookmarked &&
+          <Button onClick={deleteBookmark}>Delete Bookmark</Button>
+        }
         <H5>{data.work.summary}</H5>
       </Hero>
       <Content>
