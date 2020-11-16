@@ -47,7 +47,7 @@ export function WorkPage(props: WorkPageProps) {
   const [mode, setMode] = useState(Mode.VIEW);
 
   const user = useUserContext().user; //get the current user info
-  const { loading, data } = useQuery<FetchWork>(fetchWork, {
+  const { loading, data, refetch } = useQuery<FetchWork>(fetchWork, {
     variables: { workID },
   })
 
@@ -56,7 +56,7 @@ export function WorkPage(props: WorkPageProps) {
       if (user?.id === data.work?.user.id) {
         setIsAuthor(true)
       }
-      console.log(data.work?.chapters)
+      // console.log(data.work?.chapters)//DEBUG
       // if (chID == 0 && data.work?.chapters.length != 0) {
       //   setChID(Number(data.work?.chapters[0].id))
       // }
@@ -65,6 +65,10 @@ export function WorkPage(props: WorkPageProps) {
 
   function switchMode(mode: Mode) {
     setMode(mode);
+    //When mode gets switched back to VIEW -> refetch data
+    if (mode == Mode.VIEW) {
+      refetch()
+    }
   }
   function changeChapter(chID: number) {
     setChID(chID);

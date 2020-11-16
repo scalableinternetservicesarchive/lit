@@ -45,7 +45,7 @@ export function Chapter(props: ChapterPropParams) {
     })
 
   React.useEffect(() => {
-    if (data && mode != Mode.ADDNEW) {
+    if (data && chID != 0 && mode != Mode.ADDNEW) {
       setTitle(data.chapter?.title || '')
       setText(data.chapter?.text || '')
       //console.log(data)
@@ -55,7 +55,7 @@ export function Chapter(props: ChapterPropParams) {
       setTitle('')
       setText('')
     }
-  }, [data])//set only when data is available
+  }, [data, props.mode])//set only when data is available
 
   function postNewChapter() {
     postChapter(getApolloClient(), {
@@ -63,7 +63,7 @@ export function Chapter(props: ChapterPropParams) {
       chapterTitle: title,
       chapterText: text
     }).then((res) => {
-      console.log(res.data?.addChapter)
+      // console.log(res.data?.addChapter)//DEBUG
       props.setChID(Number(res.data?.addChapter))
       props.switchMode(Mode.VIEW)
     })
@@ -82,15 +82,7 @@ export function Chapter(props: ChapterPropParams) {
   if (loading || data == null) {
     return <div>loading...</div>
   }
-  // if (chID == 0 && mode != Mode.ADDNEW) {//will introduce bug
-  if (chID == 0) {//TODO: Enable adding new chapter for a new book (w/o any chapter)
-    return (
-      <Section>
-        <H2>Use the "+" button to add a new chapter to this work.</H2>
-      </Section>
-    )
-  }
-  if (data.chapter == null) {
+  if (chID != 0 && data.chapter == null) {
     //TODO(checking for window object):alert("Invalid Chapter. Redirecting to the first chapter (if there exist one).");
     props.setChID(0)
     return <div>Invalid Chapter</div>
@@ -150,6 +142,13 @@ export function Chapter(props: ChapterPropParams) {
   //mode == Mode.VIEW
   return (
     <Section>
+      {/* When there's no chapters for a newly created work. */}
+      {
+        chID == 0 &&
+        <H2>
+          Use the "+" button to add a new chapter to this work.
+        </H2>
+      }
       <H2>{data.chapter?.title}</H2>
       <Spacer $h4 />
       <BodyText>
