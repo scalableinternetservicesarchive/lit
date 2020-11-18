@@ -25,23 +25,6 @@ export interface FetchUserContext {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: BookmarkDel
-// ====================================================
-
-export interface BookmarkDel {
-  deleteBookmark: boolean;
-}
-
-export interface BookmarkDelVariables {
-  bookmarkID: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: FetchBookmark
 // ====================================================
 
@@ -65,6 +48,41 @@ export interface FetchBookmark_bookmarks {
 
 export interface FetchBookmark {
   bookmarks: FetchBookmark_bookmarks[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: BookmarkDel
+// ====================================================
+
+export interface BookmarkDel {
+  deleteBookmark: boolean;
+}
+
+export interface BookmarkDelVariables {
+  bookmarkID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: BookmarkCreate
+// ====================================================
+
+export interface BookmarkCreate {
+  createBookmark: number;
+}
+
+export interface BookmarkCreateVariables {
+  userID: number;
+  workID: number;
 }
 
 /* tslint:disable */

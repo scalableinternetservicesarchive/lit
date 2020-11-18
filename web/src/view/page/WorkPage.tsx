@@ -3,6 +3,7 @@ import { navigate, RouteComponentProps } from '@reach/router'
 import * as React from 'react'
 import { useState } from 'react'
 import { ColorName, Colors } from '../../../../common/src/colors'
+import { getApolloClient } from '../../graphql/apolloClient'
 import { FetchBookmark, FetchWork } from '../../graphql/query.gen'
 import { Button } from '../../style/button'
 import { H1, H2, H3, H5 } from '../../style/header'
@@ -11,9 +12,11 @@ import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
 import { useUserContext } from '../auth/user'
 import { fetchBookmark } from '../bookmark/fetchBookmark'
+import { createBookmark, delBookmark } from '../bookmark/mutateBookmark'
 import { Chapter } from '../chapter/Chapter'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
+import { handleError } from '../toast/error'
 import { fetchWork } from '../work/fetchWorks'
 import { Page } from './Page'
 
@@ -53,14 +56,14 @@ export function WorkPage(props: WorkPageProps) {
   // const [state, setState] = useState<Istate>({ isEditing: false, isNew: false });
   const [chID, setChID] = useState(Number(props.chID));
   const [isAuthor, setIsAuthor] = useState(false);
-  const [bookmarked, setBookmark] = useState(false);
+  const [bookmarkID, setBookmarkID] = useState(0);
   const [mode, setMode] = useState(Mode.VIEW);
 
   const user = useUserContext().user; //get the current user info
   const { loading, data, refetch } = useQuery<FetchWork>(fetchWork, {
     variables: { workID },
   })
-  const { data: dataBookmarks, loading: loadingB } = useQuery<FetchBookmark>(fetchBookmark)
+  const { data: dataBookmarks, loading: loadingB, refetch: refetchBookMark } = useQuery<FetchBookmark>(fetchBookmark)
   // function targetBookmark(element, index, array) {
   function targetBookmark(element: bookMark) {
     return (element.user.id == user?.id && element.work.id == workID);
@@ -76,12 +79,16 @@ export function WorkPage(props: WorkPageProps) {
       //   setChID(Number(data.work?.chapters[0].id))
       // }
     }
-    var passed = []
+    var passed: bookMark[] = []
     if (dataBookmarks?.bookmarks) {
       // console.log(dataBookmarks)
       passed = dataBookmarks.bookmarks.filter(targetBookmark);
     }
-    setBookmark(passed.length > 0)
+    if (passed.length > 0) {
+      setBookmarkID(passed[0].id)
+    } else {//reset the id back to 0 (default) in case of deleting
+      setBookmarkID(0)
+    }
   }, [data, dataBookmarks])
 
   function switchMode(mode: Mode) {
@@ -95,12 +102,19 @@ export function WorkPage(props: WorkPageProps) {
     setChID(chID);
   }
   function addBookmark() {
-    //TODO: implement the actual mutation
-    console.log("Adding to bookmark")
+    createBookmark(getApolloClient(), {
+      userID: Number(user?.id),
+      workID: workID
+    }).then(() => refetchBookMark())
+      .catch(err => handleError(err))
   }
   function deleteBookmark() {
-    //TODO: implement the actual mutation
-    console.log("Deleting the bookmark")
+    // console.log("Deleting the bookmark" + bookmarkID)//DEBUG
+    delBookmark(getApolloClient(), {
+      bookmarkID: bookmarkID,
+    })
+      .then(() => refetchBookMark())
+      .catch(err => handleError(err))
   }
   // function editNewChapter() {
   //   setState({ ...state, isNew: !state.isNew })
@@ -128,12 +142,12 @@ export function WorkPage(props: WorkPageProps) {
         <H3>{data.work.user.name}</H3>
         <Spacer $h4 />
         {
-          mode == Mode.VIEW && !bookmarked &&
-          <Button onClick={addBookmark}>Bookmark This Work</Button>
+          mode == Mode.VIEW && bookmarkID == 0 && user &&
+          <Button $small onClick={addBookmark}>Bookmark This Work</Button>
         }
         {
-          mode == Mode.VIEW && bookmarked &&
-          <Button onClick={deleteBookmark}>Delete Bookmark</Button>
+          mode == Mode.VIEW && bookmarkID != 0 &&
+          <Button $small $color="silver" onClick={deleteBookmark}>Delete Bookmark</Button>
         }
         <H5>{data.work.summary}</H5>
       </Hero>

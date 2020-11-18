@@ -10,14 +10,14 @@ import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
 import { useUserContext } from '../auth/user'
-import { delBookmark } from '../bookmark/deleteBookmark'
 import { fetchBookmark } from '../bookmark/fetchBookmark'
+import { delBookmark } from '../bookmark/mutateBookmark'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { handleError } from '../toast/error'
 import { Page } from './Page'
 
-interface BookmarkPageProps extends RouteComponentProps, AppRouteParams {}
+interface BookmarkPageProps extends RouteComponentProps, AppRouteParams { }
 
 // const DividerExampleDivider = () => <Divider />
 
