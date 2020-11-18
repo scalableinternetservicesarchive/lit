@@ -2,7 +2,7 @@
 
 * Amy Zhao <img src="./team-member-pics/amy.jpg" height="100" width="100">
 * David Macaraeg <img src="./team-member-pics/david.jpeg" height="100" width="100">
-* Haiwei Lu <img src="./team-member-pics/haiwei.jpeg" height="100" width="100">
+* Haiwei Lu <img src="https://media-exp1.licdn.com/dms/image/C5603AQG-W-eLunKtOA/profile-displayphoto-shrink_400_400/0?e=1611187200&v=beta&t=DKzxvCtAcQmzVJ0w0kyNatQxFDZFkWi4w4Zp0BEeGqU" height="100" width="100">
 * Lila Rungcharoenporn <img src="./team-member-pics/lila.jpeg" height="100" width="100">
 
 # bespin
