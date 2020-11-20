@@ -39,7 +39,7 @@ const ButtonBase = style<'a', ButtonProps>('a', 'pointer link dim br3 ph3 pv2 bl
     //   cursor: onClick ? 'pointer' : 'default',
     //   padding: $small ? '8px 12px 8px 12px' : '11px 24px 9px 24px',
     //   width: $width + 'px',
-    //   fontSize: $small ? '14px' : '16px',
+    fontSize: p.$small ? '14px' : '16px',
     //   fontFamily: Fonts.sansHeader,
     //   ':focus': {
     //     color: $filled ? Colors.ink : fgLight,
