@@ -95,7 +95,7 @@ export interface QueryChapterArgs {
 }
 
 export interface QueryTargetWorksArgs {
-  targetWork: Scalars['String']
+  targetWork?: Maybe<Scalars['String']>
 }
 
 export interface QueryBookmarkArgs {
@@ -384,7 +384,7 @@ export type QueryResolvers<
     Maybe<Array<ResolversTypes['Work']>>,
     ParentType,
     ContextType,
-    RequireFields<QueryTargetWorksArgs, 'targetWork'>
+    RequireFields<QueryTargetWorksArgs, never>
   >
   works?: Resolver<Maybe<Array<ResolversTypes['Work']>>, ParentType, ContextType>
   bookmark?: Resolver<

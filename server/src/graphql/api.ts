@@ -11,7 +11,6 @@ import { SurveyQuestion } from '../entities/SurveyQuestion'
 import { User } from '../entities/User'
 import { Work } from '../entities/Work'
 import { Resolvers } from './schema.types'
-
 export const pubsub = new PubSub()
 
 export function getSchema() {
@@ -38,11 +37,15 @@ export const graphqlRoot: Resolvers<Context> = {
     // answer: you didn't run "npm run gen" after modifying the schema.graphql file. And usually the schema in the schema.graphql doesn't match the schema specified in the files of the entities folder if the schema.graphql doesn't seem to be the problem.
     work: async (_, { workID }) => (await Work.findOne({ where: { id: workID }, relations: ['user'] })) || null,
     // used to get the works for the search bar
-    targetWorks: async (_, { targetWork }) => (await Work.find({ where: { title: targetWork } })) || null,
+    targetWorks: async (_, { targetWork }) => (await Work.find({
+      where: { title: targetWork },
+      relations: ['user']
+    })) || null,
     // used to get all the works
     works: () => Work.find({ relations: ['user'] }),
     bookmark: async (_, { bookmarkID }) => (await Bookmark.findOne({ where: { id: bookmarkID }, relations: ['user', 'work'] })) || null,
     bookmarks: () => Bookmark.find({ relations: ['user', 'work'] }),
+
     // TODO: tried executing the following, but it wouldn't work. It would work if I took out the "user {...},". How can we query user from work?
     // This is important because we need to learn how to access the user from the work
     // {
@@ -96,7 +99,7 @@ export const graphqlRoot: Resolvers<Context> = {
     updateSummary: async (_, { input }, ctx) => {
       const { summary, workID } = input
       const targetWork = check(await Work.findOne({ where: { id: workID } }))
-      const newWork = targetWork
+      var newWork = targetWork
       newWork.summary = summary
       await newWork.save()
 
@@ -105,7 +108,7 @@ export const graphqlRoot: Resolvers<Context> = {
     updateChapter: async (_, { input }, ctx) => {
       const { title, text, chapterID } = input
       const targetChapter = check(await Chapter.findOne({ where: { id: chapterID } }))
-      const newChapter = targetChapter
+      var newChapter = targetChapter
       newChapter.title = title
       newChapter.text = text
       await newChapter.save()

@@ -437,6 +437,36 @@ export interface FetchWorks {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: FetchWorksSearch
+// ====================================================
+
+export interface FetchWorksSearch_targetWorks_user {
+  __typename: "User";
+  name: string;
+}
+
+export interface FetchWorksSearch_targetWorks {
+  __typename: "Work";
+  id: number;
+  title: string;
+  summary: string;
+  user: FetchWorksSearch_targetWorks_user;
+}
+
+export interface FetchWorksSearch {
+  targetWorks: FetchWorksSearch_targetWorks[] | null;
+}
+
+export interface FetchWorksSearchVariables {
+  searchTitle?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchWorksWritten
 // ====================================================
 

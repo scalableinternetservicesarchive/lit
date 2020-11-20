@@ -120,7 +120,7 @@ type Query {
   users: [User!]!
   work(workID: Int!): Work
   chapter(chID: Int!): Chapter
-  targetWorks(targetWork: String!): [Work!]
+  targetWorks(targetWork: String): [Work!]
   works: [Work!]
   bookmark (bookmarkID: Int!): Bookmark
   bookmarks: [Bookmark!]
