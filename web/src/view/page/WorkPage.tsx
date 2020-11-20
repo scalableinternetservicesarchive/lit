@@ -14,35 +14,33 @@ import { useUserContext } from '../auth/user'
 import { fetchBookmark } from '../bookmark/fetchBookmark'
 import { createBookmark, delBookmark } from '../bookmark/mutateBookmark'
 import { Chapter } from '../chapter/Chapter'
+import { delChapter } from '../chapter/deleteChapter'
 import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { handleError } from '../toast/error'
 import { fetchWork } from '../work/fetchWorks'
 import { Page } from './Page'
-import { delChapter } from '../chapter/deleteChapter'
-import { getApolloClient } from '../../graphql/apolloClient'
-import { handleError } from '../toast/error'
 
 export enum Mode {
   VIEW,
   EDIT,
-  ADDNEW
+  ADDNEW,
 }
 
 interface pathParams {
-  workID: number;
-  chID: number;
+  workID: number
+  chID: number
 }
 
 interface bookMark {
   work: {
-    title: string;
-    id: number;
-  };
+    title: string
+    id: number
+  }
   user: {
-    id: number;
-  };
-  id: number;
+    id: number
+  }
+  id: number
 }
 // interface Imode {
 
@@ -52,24 +50,24 @@ interface bookMark {
 //   // password: string;
 // }
 
-interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams { }
+interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams {}
 
 export function WorkPage(props: WorkPageProps) {
-  const workID = Number(props.workID);
+  const workID = Number(props.workID)
   // const [state, setState] = useState<Istate>({ isEditing: false, isNew: false });
-  const [chID, setChID] = useState(Number(props.chID));
-  const [isAuthor, setIsAuthor] = useState(false);
-  const [bookmarkID, setBookmarkID] = useState(0);
-  const [mode, setMode] = useState(Mode.VIEW);
+  const [chID, setChID] = useState(Number(props.chID))
+  const [isAuthor, setIsAuthor] = useState(false)
+  const [bookmarkID, setBookmarkID] = useState(0)
+  const [mode, setMode] = useState(Mode.VIEW)
 
-  const user = useUserContext().user; //get the current user info
+  const user = useUserContext().user //get the current user info
   const { loading, data, refetch } = useQuery<FetchWork>(fetchWork, {
     variables: { workID },
   })
   const { data: dataBookmarks, loading: loadingB, refetch: refetchBookMark } = useQuery<FetchBookmark>(fetchBookmark)
   // function targetBookmark(element, index, array) {
   function targetBookmark(element: bookMark) {
-    return (element.user.id == user?.id && element.work.id == workID);
+    return element.user.id == user?.id && element.work.id == workID
   }
 
   React.useEffect(() => {
@@ -82,33 +80,35 @@ export function WorkPage(props: WorkPageProps) {
       //   setChID(Number(data.work?.chapters[0].id))
       // }
     }
-    var passed: bookMark[] = []
+    let passed: bookMark[] = []
     if (dataBookmarks?.bookmarks) {
       // console.log(dataBookmarks)
-      passed = dataBookmarks.bookmarks.filter(targetBookmark);
+      passed = dataBookmarks.bookmarks.filter(targetBookmark)
     }
     if (passed.length > 0) {
       setBookmarkID(passed[0].id)
-    } else {//reset the id back to 0 (default) in case of deleting
+    } else {
+      //reset the id back to 0 (default) in case of deleting
       setBookmarkID(0)
     }
   }, [data, dataBookmarks])
 
   function switchMode(mode: Mode) {
-    setMode(mode);
+    setMode(mode)
     //When mode gets switched back to VIEW -> refetch data
     if (mode == Mode.VIEW) {
       refetch()
     }
   }
   function changeChapter(chID: number) {
-    setChID(chID);
+    setChID(chID)
   }
   function addBookmark() {
     createBookmark(getApolloClient(), {
       userID: Number(user?.id),
-      workID: workID
-    }).then(() => refetchBookMark())
+      workID: workID,
+    })
+      .then(() => refetchBookMark())
       .catch(err => handleError(err))
   }
   function deleteBookmark() {
@@ -151,52 +151,50 @@ export function WorkPage(props: WorkPageProps) {
         <H1>{data.work.title}</H1>
         <H3>{data.work.user.name}</H3>
         <Spacer $h4 />
-        {
-          mode == Mode.VIEW && bookmarkID == 0 && user &&
-          <Button $small onClick={addBookmark}>Bookmark This Work</Button>
-        }
-        {
-          mode == Mode.VIEW && bookmarkID != 0 &&
-          <Button $small $color="silver" onClick={deleteBookmark}>Delete Bookmark</Button>
-        }
+        {mode == Mode.VIEW && bookmarkID == 0 && user && (
+          <Button $small onClick={addBookmark}>
+            Bookmark This Work
+          </Button>
+        )}
+        {mode == Mode.VIEW && bookmarkID != 0 && (
+          <Button $small $color="silver" onClick={deleteBookmark}>
+            Delete Bookmark
+          </Button>
+        )}
         <H5>{data.work.summary}</H5>
       </Hero>
       <Content>
         <LContent>
-          {chID == 0 && !isAuthor ?
+          {chID == 0 && !isAuthor ? (
             <Section>
               <H2>There's no content yet.</H2>
             </Section>
-            :
+          ) : (
             <Chapter workID={workID} chID={chID} mode={mode} switchMode={switchMode} setChID={changeChapter} />
-          }
+          )}
           {/* <Chapter chID={chID} isEditing={state.isEditing} /> */}
-          {isAuthor && mode == Mode.VIEW && data.work?.chapters.length != 0 &&
-            <Button onClick={() => switchMode(Mode.EDIT)}>
-              Edit
-            </Button>
-          }
+          {isAuthor && mode == Mode.VIEW && data.work?.chapters.length != 0 && (
+            <Button onClick={() => switchMode(Mode.EDIT)}>Edit</Button>
+          )}
         </LContent>
         <RContent>
           <Section>
             <H2>Menu</H2>
             <Spacer $h4 />
-            {isAuthor && mode == Mode.VIEW &&
-              <Button onClick={() => switchMode(Mode.ADDNEW)}>
-                +
-              </Button>
-            }
+            {isAuthor && mode == Mode.VIEW && <Button onClick={() => switchMode(Mode.ADDNEW)}>+</Button>}
             <BodyText>
               <table>
                 <tbody>
                   {data.work?.chapters?.map((chapter, i) => (
                     <tr key={i}>
                       <TD>
-                        <Link onClick={async () => {
-                          setChID(chapter.id)
-                          switchMode(Mode.VIEW)
-                          navigate(String(chapter.id), { replace: false })
-                        }}>
+                        <Link
+                          onClick={async () => {
+                            setChID(chapter.id)
+                            switchMode(Mode.VIEW)
+                            navigate(String(chapter.id), { replace: false })
+                          }}
+                        >
                           {/* <Link to={String(chapter.id)} onClick={() => setChID(chapter.id)}> */}
                           Chapter {i + 1}: {chapter.title}
                         </Link>
@@ -211,7 +209,7 @@ export function WorkPage(props: WorkPageProps) {
           </Section>
         </RContent>
       </Content>
-    </Page >
+    </Page>
   )
   // return (
   //   <Page>

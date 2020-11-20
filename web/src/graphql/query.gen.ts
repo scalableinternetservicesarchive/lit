@@ -56,17 +56,6 @@ export interface FetchBookmark {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-<<<<<<< HEAD
-// GraphQL mutation operation: ChapterDel
-// ====================================================
-
-export interface ChapterDel {
-  deleteChapter: boolean;
-}
-
-export interface ChapterDelVariables {
-  chapterID: number;
-=======
 // GraphQL mutation operation: BookmarkDel
 // ====================================================
 
@@ -94,7 +83,23 @@ export interface BookmarkCreate {
 export interface BookmarkCreateVariables {
   userID: number;
   workID: number;
->>>>>>> 386e9d132887ec3102c3c7e0bdb73958aa6083ff
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ChapterDel
+// ====================================================
+
+export interface ChapterDel {
+  deleteChapter: boolean;
+}
+
+export interface ChapterDelVariables {
+  chapterID: number;
 }
 
 /* tslint:disable */
