@@ -73,6 +73,23 @@ export interface FetchBookmark {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: ChapterDel
+// ====================================================
+
+export interface ChapterDel {
+  deleteChapter: boolean;
+}
+
+export interface ChapterDelVariables {
+  chapterID: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchChapter
 // ====================================================
 

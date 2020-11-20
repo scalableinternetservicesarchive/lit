@@ -17,6 +17,9 @@ import { Link } from '../nav/Link'
 import { AppRouteParams } from '../nav/route'
 import { fetchWork } from '../work/fetchWorks'
 import { Page } from './Page'
+import { delChapter } from '../chapter/deleteChapter'
+import { getApolloClient } from '../../graphql/apolloClient'
+import { handleError } from '../toast/error'
 
 export enum Mode {
   VIEW,
@@ -76,7 +79,13 @@ export function WorkPage(props: WorkPageProps) {
   // function editNewChapter() {
   //   setState({ ...state, isNew: !state.isNew })
   // }
-
+  function eraseChapter(id: any) {
+    delChapter(getApolloClient(), {
+      chapterID: id,
+    })
+      .then(() => window.location.reload())
+      .catch(err => handleError(err))
+  }
   if (loading) {
     return <div>loading state</div>
   }
@@ -138,6 +147,8 @@ export function WorkPage(props: WorkPageProps) {
                           {/* <Link to={String(chapter.id)} onClick={() => setChID(chapter.id)}> */}
                           Chapter {i + 1}: {chapter.title}
                         </Link>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <Button onClick={() => eraseChapter(chapter.id)}> - </Button>
                       </TD>
                     </tr>
                   ))}
