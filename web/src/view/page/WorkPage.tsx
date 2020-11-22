@@ -50,7 +50,7 @@ interface bookMark {
 //   // password: string;
 // }
 
-interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams {}
+interface WorkPageProps extends RouteComponentProps<pathParams>, AppRouteParams { }
 
 export function WorkPage(props: WorkPageProps) {
   const workID = Number(props.workID)
@@ -170,8 +170,8 @@ export function WorkPage(props: WorkPageProps) {
               <H2>There's no content yet.</H2>
             </Section>
           ) : (
-            <Chapter workID={workID} chID={chID} mode={mode} switchMode={switchMode} setChID={changeChapter} />
-          )}
+              <Chapter workID={workID} chID={chID} mode={mode} switchMode={switchMode} setChID={changeChapter} />
+            )}
           {/* <Chapter chID={chID} isEditing={state.isEditing} /> */}
           {isAuthor && mode == Mode.VIEW && data.work?.chapters.length != 0 && (
             <Button onClick={() => switchMode(Mode.EDIT)}>Edit</Button>
@@ -198,8 +198,11 @@ export function WorkPage(props: WorkPageProps) {
                           {/* <Link to={String(chapter.id)} onClick={() => setChID(chapter.id)}> */}
                           Chapter {i + 1}: {chapter.title}
                         </Link>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <Button onClick={() => eraseChapter(chapter.id)}> - </Button>
+                        {/* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */}
+                        {
+                          isAuthor && mode == Mode.VIEW &&
+                          <Button $small onClick={() => eraseChapter(chapter.id)}>delete</Button>
+                        }
                       </TD>
                     </tr>
                   ))}
