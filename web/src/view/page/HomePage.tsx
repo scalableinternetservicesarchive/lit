@@ -120,7 +120,7 @@ export function HomePage(props: HomePageProps) {
       </Hero>
       <Input $onChange={setWorkNameSearch} $onSubmit={submitSearchTitle}></Input>
       <Content>
-        {dataList.map((work: Work) => (
+        {dataList.slice(0).reverse().map((work: Work) => (
           <Section key={work.id}>
             <H2>
               {' '}
