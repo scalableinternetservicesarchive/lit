@@ -9,11 +9,12 @@ npm run clean
 # cp package.jsons
 cp package.json package-lock.json ./server/bin
 cp server/package.json server/package-lock.json ./server/bin/server
-cp web/package.json web/package-lock.json ./server/bin/web
+# cp web/package.json web/package-lock.json ./server/bin/web
 
 # copy static resources
-cp postinstall.sh ./server/bin/postinstall.sh
-cp web/postinstall.sh ./server/bin/web/postinstall.sh
+# cp postinstall.sh ./server/bin/postinstall.sh
+# cp web/postinstall.sh ./server/bin/web/postinstall.sh
+cp fix-maps.js ./server/bin/fix-maps.js
 cp -r ./public ./server/bin
 cp -r ./server/src/db/migrations ./server/bin/server/src/db
 cp ./server/src/graphql/schema.graphql ./server/bin/server/src/graphql/schema.graphql
@@ -21,7 +22,7 @@ cp ./server/src/graphql/schema.graphql ./server/bin/server/src/graphql/schema.gr
 # install per-package package.json deps
 npm --prefix ./server/bin ci --production
 npm --prefix ./server/bin/server ci --production
-npm --prefix ./server/bin/web ci --production
+# npm --prefix ./server/bin/web ci --production
 
 
 # cd server/bin

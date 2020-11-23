@@ -39,8 +39,7 @@ server.express.use(json())
 server.express.use(raw())
 server.express.use('/app', cors(), expressStatic(path.join(__dirname, '../../public')))
 
-const asyncRoute = (fn: RequestHandler) => (...args: Parameters<RequestHandler>) =>
-  fn(args[0], args[1], args[2]).catch(args[2])
+const asyncRoute = (fn: RequestHandler) => (...args: Parameters<RequestHandler>) => fn(args[0], args[1], args[2])
 
 server.express.get('/', (req, res) => {
   console.log('GET /')
