@@ -1,5 +1,5 @@
 import http from 'k6/http'
-// import { sleep } from 'k6'
+import { sleep } from 'k6'
 import { Counter, Rate } from 'k6/metrics'
 
 export const options = {
@@ -12,9 +12,9 @@ export const options = {
       timeUnit: '1s',
       // executor-specific configuration
       preAllocatedVUs: 50,
-      maxVUs: 100,
+      maxVUs: 500,
       stages: [
-        { target: 200, duration: '30s' },
+        { target: 1, duration: '30s' },
         { target: 0, duration: '30s' },
       ],
     },
@@ -23,18 +23,48 @@ export const options = {
 
 export default function () {
   // recordRates(
-  const resp = http.post(
-    'http://localhost:3000/graphql',
-    '{"operationName":"AnswerSurveyQuestion","variables":{"input":{"answer":"🤗","questionId":1}},"query":"mutation AnswerSurveyQuestion($input: SurveyInput!) {\\n  answerSurvey(input: $input)\\n}\\n"}',
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  // const homePage = http.post(
+  //   'http://localhost:3000/graphql',
+  //   '{"operationName":"FetchWorks","variables":{},"query":"query FetchWorks {\n  works {\n    id\n    title\n    summary\n    user {\n      name\n      __typename\n    }\n    __typename\n  }\n}\n"}',
+  //   {
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   }
+  // )
+  // let query = `
+  //   query FetchWorks {
+  //     works {
+  //       id
+  //       title
+  //       summary
+  //       user {
+  //         name
+  //       }
+  //     }
+  //   }`;
+  let query = `
+  query FetchWorks {
+    works {
+      id
     }
-  )
+  }`;
+  let headers =  {
+    'Content-Type': 'application/json',
+  };
+  const homePage = http.post('http://localhost:3000/graphql', JSON.stringify({ query: query }), { headers: headers });
+  // const resp = http.post(
+  //   'http://localhost:3000/graphql',
+  //   '{"operationName":"AnswerSurveyQuestion","variables":{"input":{"answer":"🤗","questionId":1}},"query":"mutation AnswerSurveyQuestion($input: SurveyInput!) {\\n  answerSurvey(input: $input)\\n}\\n"}',
+  //   {
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   }
+  // )
   // )
   sleep(1)
-  http.get('http://localhost:3000')
+  // http.get('http://localhost:3000')
 }
 
 const count200 = new Counter('status_code_2xx')
