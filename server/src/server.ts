@@ -49,7 +49,7 @@ server.express.get('/', (req, res) => {
 
 server.express.get('/app/*', (req, res) => {
   console.log('GET /app')
-  renderApp(req, res)
+  renderApp(req, res, server.executableSchema)
 })
 
 const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
