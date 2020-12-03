@@ -208,10 +208,22 @@ export const graphqlRoot: Resolvers<Context> = {
       return true
     },
   },
-  // provide chapters iff someone's actually requesting it
+  // provide chapters or bookmarks iff someone's actually requesting it
   Work: {
     chapters: (self, arg, ctx) => {
       return Chapter.find({ where: { workId: self.id } }) as any
+    },
+    bookmarks: (self, arg, ctx) => {
+      return Bookmark.find({ where: {workId: self.id } }) as any
+    }
+  },
+
+  User: {
+    works: (self, arg, ctx) => {
+      return Work.find({ where: {userId: self.id } }) as any
+    },
+    bookmarks: (self, arg, ctx) => {
+      return Bookmark.find({ where: {userId: self.id } }) as any
     }
   },
 

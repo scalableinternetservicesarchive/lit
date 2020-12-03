@@ -38,12 +38,15 @@ export class Work extends BaseEntity {
   @UpdateDateColumn()
   timeUpdated: Date
 
+  @Column()
+  userId: number
+
   @ManyToOne(() => User, user => user.works)
   user: User
 
   @OneToMany(() => Chapter, chapter => chapter.work)
   chapters: Chapter[]
 
-  @OneToMany(() => Bookmark, bookmark => bookmark.work, { eager: true })
+  @OneToMany(() => Bookmark, bookmark => bookmark.work)
   bookmarks: Bookmark[]
 }
