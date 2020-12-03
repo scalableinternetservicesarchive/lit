@@ -34,6 +34,9 @@ export class Chapter extends BaseEntity {
   @UpdateDateColumn()
   timeUpdated: Date
 
+  @Column()
+  workId: number
+
   @ManyToOne(() => Work, work => work.chapters)
   work: Work
 }

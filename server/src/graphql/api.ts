@@ -208,6 +208,13 @@ export const graphqlRoot: Resolvers<Context> = {
       return true
     },
   },
+  // provide chapters iff someone's actually requesting it
+  Work: {
+    chapters: (self, arg, ctx) => {
+      return Chapter.find({ where: { workId: self.id } }) as any
+    }
+  },
+
   Subscription: {
     surveyUpdates: {
       subscribe: (_, { surveyId }, context) => context.pubsub.asyncIterator('SURVEY_UPDATE_' + surveyId),
