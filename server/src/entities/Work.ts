@@ -41,9 +41,9 @@ export class Work extends BaseEntity {
   @ManyToOne(() => User, user => user.works)
   user: User
 
-  @OneToMany(() => Chapter, chapter => chapter.work)
+  @OneToMany(() => Chapter, chapter => chapter.work, { eager: true })
   chapters: Chapter[]
 
-  @OneToMany(() => Bookmark, bookmark => bookmark.work)
+  @OneToMany(() => Bookmark, bookmark => bookmark.work, { eager: true })
   bookmarks: Bookmark[]
 }

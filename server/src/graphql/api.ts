@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+import DataLoader from 'dataloader'
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import path from 'path'
@@ -11,6 +12,7 @@ import { SurveyQuestion } from '../entities/SurveyQuestion'
 import { User } from '../entities/User'
 import { Work } from '../entities/Work'
 import { Resolvers } from './schema.types'
+
 export const pubsub = new PubSub()
 
 export function getSchema() {
@@ -23,6 +25,10 @@ interface Context {
   request: Request
   response: Response
   pubsub: PubSub
+  userLoader: DataLoader<number, User, number>
+  workLoader: DataLoader<number, Work, number>
+  bookmarkLoader: DataLoader<number, Bookmark, number>
+  chapterLoader: DataLoader<number, Chapter, number>
 }
 
 export const graphqlRoot: Resolvers<Context> = {
@@ -30,12 +36,12 @@ export const graphqlRoot: Resolvers<Context> = {
     self: (_, args, ctx) => ctx.user,
     survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
     surveys: () => Survey.find(),
-    user: async (_, { userID }) => (await User.findOne({ where: { id: userID } })) || null,
+    user: async (_, { userID }, ctx) => ctx.userLoader.load(userID) || null,
     users: () => User.find(),
     // the {workID} is specific to the parameter set within query type of schema.graphql. id is specific to the column name within the database created by Work.ts
     // TODO: ask why the following is the case? --> the following does not work anymore once I put the many-to-one relation inside the work.ts file
     // answer: you didn't run "npm run gen" after modifying the schema.graphql file. And usually the schema in the schema.graphql doesn't match the schema specified in the files of the entities folder if the schema.graphql doesn't seem to be the problem.
-    work: async (_, { workID }) => (await Work.findOne({ where: { id: workID }, relations: ['user'] })) || null,
+    work: async (_, { workID }, ctx) => ctx.workLoader.load(workID) || null,
     // used to get the works for the search bar
     targetWorks: async (_, { targetWork }) => (await Work.find({
       where: { title: targetWork },
@@ -43,7 +49,7 @@ export const graphqlRoot: Resolvers<Context> = {
     })) || null,
     // used to get all the works
     works: () => Work.find({ relations: ['user'] }),
-    bookmark: async (_, { bookmarkID }) => (await Bookmark.findOne({ where: { id: bookmarkID }, relations: ['user', 'work'] })) || null,
+    bookmark: async (_, { bookmarkID }, ctx) => ctx.bookmarkLoader.load(bookmarkID) || null,
     bookmarks: () => Bookmark.find({ relations: ['user', 'work'] }),
 
     // TODO: tried executing the following, but it wouldn't work. It would work if I took out the "user {...},". How can we query user from work?
@@ -70,7 +76,7 @@ export const graphqlRoot: Resolvers<Context> = {
     //     },
     //   }
     // }
-    chapter: async (_, { chID }) => (await Chapter.findOne({ where: { id: chID } })) || null,
+    chapter: async (_, { chID }, ctx) => ctx.chapterLoader.load(chID) || null,
     // if you want to query work info within a chapter query, then you need to add in ", relations: ['work']"
   }, // select * from chapter where chapterID = <user input>
   Mutation: {

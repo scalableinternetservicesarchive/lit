@@ -40,9 +40,9 @@ export class User extends BaseEntity implements GraphqlUser {
   })
   name: string
 
-  @OneToMany(() => Work, work => work.user)
+  @OneToMany(() => Work, work => work.user, { eager: true })
   works: Work[]
 
-  @OneToMany(() => Bookmark, bookmark => bookmark.user)
+  @OneToMany(() => Bookmark, bookmark => bookmark.user, { eager: true })
   bookmarks: Bookmark[]
 }

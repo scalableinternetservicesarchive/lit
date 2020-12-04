@@ -8,7 +8,7 @@ import { Work } from '../entities/Work';
 // otherwise dataloader throws an error
 
 export const workLoader = () => new DataLoader(async (ids: readonly number[]) => {
-  const works = await Work.findByIds(<number[]>ids);
+  const works = await Work.findByIds(<number[]>ids, { relations: ['user'] });
   const workMap: { [key: number]: Work } = {};
   works.forEach(work => {
     workMap[work.id] = work;
@@ -26,7 +26,7 @@ export const userLoader = () => new DataLoader(async (ids: readonly number[]) =>
 });
 
 export const bookmarkLoader = () => new DataLoader(async (ids: readonly number[]) => {
-  const bookmarks = await Bookmark.findByIds(<number[]>ids);
+  const bookmarks = await Bookmark.findByIds(<number[]>ids, { relations: ['user', 'work'] });
   const bookmarkMap: { [key: number]: Bookmark } = {};
   bookmarks.forEach(bookmark => {
     bookmarkMap[bookmark.id] = bookmark;
