@@ -24,6 +24,7 @@ import { Session } from './entities/Session'
 import { User } from './entities/User'
 import { getSchema, graphqlRoot, pubsub } from './graphql/api'
 import { ConnectionManager } from './graphql/ConnectionManager'
+import { bookmarkLoader, userLoader, workLoader } from './graphql/loaders'
 import { UserType } from './graphql/schema.types'
 import { expressLambdaProxy } from './lambda/handler'
 import { renderApp } from './render'
@@ -31,7 +32,14 @@ import { renderApp } from './render'
 const server = new GraphQLServer({
   typeDefs: getSchema(),
   resolvers: graphqlRoot as any,
-  context: ctx => ({ ...ctx, pubsub, user: (ctx.request as any)?.user || null }),
+  context: ctx => ({
+    ...ctx,
+    pubsub,
+    user: (ctx.request as any)?.user || null,
+    workLoader: workLoader(),
+    userLoader: userLoader(),
+    bookmarkLoader: bookmarkLoader()
+  }),
 })
 
 server.express.use(cookieParser())
