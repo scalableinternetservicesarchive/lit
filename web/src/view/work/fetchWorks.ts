@@ -20,8 +20,8 @@ export const fetchWork = gql`
 
 
 export const fetchWorks = gql`
-  query FetchWorks {
-    works {
+  query FetchWorks ($numOfWorks: Int!) {
+    works (numOfWorks: $numOfWorks) {
       id
       title
       summary

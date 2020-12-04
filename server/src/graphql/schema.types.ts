@@ -98,6 +98,10 @@ export interface QueryTargetWorksArgs {
   targetWork: Scalars['String']
 }
 
+export interface QueryWorksArgs {
+  numOfWorks: Scalars['Int']
+}
+
 export interface QueryBookmarkArgs {
   bookmarkID: Scalars['Int']
 }
@@ -386,7 +390,12 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryTargetWorksArgs, 'targetWork'>
   >
-  works?: Resolver<Maybe<Array<ResolversTypes['Work']>>, ParentType, ContextType>
+  works?: Resolver<
+    Maybe<Array<ResolversTypes['Work']>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryWorksArgs, 'numOfWorks'>
+  >
   bookmark?: Resolver<
     Maybe<ResolversTypes['Bookmark']>,
     ParentType,
