@@ -52,7 +52,9 @@ export function HomePage(props: HomePageProps) {
   //var temp = "gameofthrones";
   const [workNameSearch, setWorkNameSearch] = useState('');
   const [dataList, setDataList] = useState([] as any);
-  const { loading, data, refetch } = useQuery<FetchWorks>(fetchWorks)
+  const { loading, data, refetch } = useQuery<FetchWorks>(fetchWorks , {
+    variables: { numOfWorks: 10 }
+  })
   const { data: dataSearch, refetch: refetchSearch } = useQuery<FetchWorksSearch>(fetchWorksSearch, {
     variables: { searchTitle: workNameSearch }
   })
