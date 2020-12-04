@@ -31,3 +31,27 @@ export const fetchWorks = gql`
     }
   }
 `
+/*
+query check($title: String) {
+  targetWorks(targetWork: $title) {
+    id
+    title
+    summary
+    user {
+      name
+    }
+  }
+}
+*/
+export const fetchWorksSearch = gql`
+  query FetchWorksSearch($searchTitle: String) {
+    targetWorks(targetWork: $searchTitle) {
+      id
+      title
+      summary
+      user {
+        name
+      }
+    }
+  }
+`

@@ -27,7 +27,7 @@ export class Work extends BaseEntity {
   title: string
 
   @Column({
-    length: 100,
+    length: 1000,
   })
   summary: string
 

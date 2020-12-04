@@ -1,5 +1,13 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm'
-import { Work } from "./Work"
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm'
+import { Work } from './Work'
 
 @Entity()
 export class Chapter extends BaseEntity {
@@ -16,7 +24,7 @@ export class Chapter extends BaseEntity {
   title: string
 
   @Column({
-    length: 100,
+    length: 5000,
   })
   text: string
 
