@@ -1,6 +1,19 @@
-insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'John Rothfels');
-insert into `user` (`email`, `userType`, `name`) values ('writer0@test.com', 'USER', 'Meredith Nicholson');
-insert into `user` (`email`, `userType`, `name`) values ('writer1@test.com', 'USER', 'Conan Doyle');
+-- Initialize MYSQL database
+delete from `bookmark` where id > 1;
+delete from `chapter` where id > 1;
+delete from `work` where id > 7;
+delete from `session`;
+delete from `user` where id > 1;
+-- reset migration
+delete from migration_schema_history where installed_rank >= 1;
+drop table bookmark;
+drop table session;
+drop table chapter;
+drop table work;
+drop table user;
+--
+insert into `user` (`email`, `userType`, `name`) values ('writer0@test.com', 'USER', 'Test Writer0');
+insert into `user` (`email`, `userType`, `name`) values ('writer1@test.com', 'USER', 'Test Writer1');
 insert into `user` (`email`, `userType`, `name`) values ('writer2@test.com', 'USER', 'Test Writer2');
 insert into `user` (`email`, `userType`, `name`) values ('writer3@test.com', 'USER', 'Test Writer3');
 insert into `user` (`email`, `userType`, `name`) values ('writer4@test.com', 'USER', 'Test Writer4');
@@ -30,3 +43,5 @@ insert into `user` (`email`, `userType`, `name`) values ('writer27@test.com', 'U
 insert into `user` (`email`, `userType`, `name`) values ('writer28@test.com', 'USER', 'Test Writer28');
 insert into `user` (`email`, `userType`, `name`) values ('writer29@test.com', 'USER', 'Test Writer29');
 insert into `user` (`email`, `userType`, `name`) values ('writer30@test.com', 'USER', 'Test Writer30');
+insert into `chapter` (`id`, `workID`, `title`, `text`) values (2, 1,'titletest', 'testtest');
+insert into `chapter` (`id`, `workID`, `title`, `text`) values (3, 1,'titletest', 'testtest');
