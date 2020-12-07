@@ -1,9 +1,9 @@
 -- Initialize MYSQL database
 delete from `bookmark` where id > 1;
-delete from `chapter` where id > 1;
-delete from `work` where id > 7;
+delete from `chapter` where id > 4;
+delete from `work` where id > 51;
 delete from `session`;
-delete from `user` where id > 1;
+delete from `user` where id > 71;
 -- reset migration
 delete from migration_schema_history where installed_rank >= 1;
 drop table bookmark;

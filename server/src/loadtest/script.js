@@ -3,7 +3,26 @@ import { sleep, group, check } from 'k6'
 import { Counter, Rate } from 'k6/metrics'
 // cd server/src/loadtest
 //command for debugging default function the script
-//k6 run script.js --http-debug="full" -i 1 -u 1
+// k6 run script.js --http-debug="full" -i 1 -u 1
+//initial baseline
+const configVUs = [
+  //below normal, normal, around break, beyond break
+  [2, 4, 8, 15],//anonymous User
+  [1, 2, 3, 4],//writer
+  [2, 4, 6, 8]//reader
+];
+//new baseline
+// const configVUs = [
+//   //below normal, normal, around break, beyond break
+//   [10, 20, 30, 40],//anonymous User
+//   [2, 4, 6, 8],//writer
+//   [4, 8, 12, 16]//reader
+// ];
+const durationGrowing = '1m';
+// const durationSteady = '4m';
+const durationSteady = '5m';
+const scaledown = '1m';
+// const durationSteady = '30s';
 
 export const options = {
   scenarios: {
@@ -13,15 +32,15 @@ export const options = {
       executor: 'ramping-vus',
       startVUs: 1,
       stages: [
-        { duration: '1m', target: 2 }, // below normal load
-        { duration: '5m', target: 2 },
-        { duration: '1m', target: 4 }, // normal load
-        { duration: '5m', target: 4 },
-        { duration: '1m', target: 8 }, // around the breaking point
-        { duration: '5m', target: 8 },
-        { duration: '1m', target: 15 }, // beyond the breaking point
-        { duration: '5m', target: 15 },
-        { duration: '1m', target: 0 }, // scale down. Recovery stage.
+        { duration: durationGrowing, target: configVUs[0][0] }, // below normal load
+        { duration: durationSteady, target: configVUs[0][0] },
+        { duration: durationGrowing, target: configVUs[0][1] }, // normal load
+        { duration: durationSteady, target: configVUs[0][1] },
+        { duration: durationGrowing, target: configVUs[0][2] }, // around the breaking point
+        { duration: durationSteady, target: configVUs[0][2] },
+        { duration: durationGrowing, target: configVUs[0][3] }, // beyond the breaking point
+        { duration: durationSteady, target: configVUs[0][3] },
+        { duration: scaledown, target: 0 }, // scale down. Recovery stage.
       ],
       gracefulRampDown: '30s',
     },
@@ -31,15 +50,15 @@ export const options = {
       executor: 'ramping-vus',
       startVUs: 1,
       stages: [
-        { duration: '1m', target: 1 }, // below normal load
-        { duration: '5m', target: 1 },
-        { duration: '1m', target: 2 }, // normal load
-        { duration: '5m', target: 2 },
-        { duration: '1m', target: 3 }, // around the breaking point
-        { duration: '5m', target: 3 },
-        { duration: '1m', target: 4 }, // beyond the breaking point
-        { duration: '5m', target: 4 },
-        { duration: '1m', target: 0 }, // scale down. Recovery stage.
+        { duration: durationGrowing, target: configVUs[1][0] }, // below normal load
+        { duration: durationSteady, target: configVUs[1][0] },
+        { duration: durationGrowing, target: configVUs[1][1] }, // normal load
+        { duration: durationSteady, target: configVUs[1][1] },
+        { duration: durationGrowing, target: configVUs[1][2] }, // around the breaking point
+        { duration: durationSteady, target: configVUs[1][2] },
+        { duration: durationGrowing, target: configVUs[1][3] }, // beyond the breaking point
+        { duration: durationSteady, target: configVUs[1][3] },
+        { duration: scaledown, target: 0 }, // scale down. Recovery stage.
       ],
       gracefulRampDown: '30s',
     },
@@ -49,15 +68,15 @@ export const options = {
       executor: 'ramping-vus',
       startVUs: 1,
       stages: [
-        { duration: '1m', target: 2 }, // below normal load
-        { duration: '5m', target: 2 },
-        { duration: '1m', target: 4 }, // normal load
-        { duration: '5m', target: 4 },
-        { duration: '1m', target: 6 }, // around the breaking point
-        { duration: '5m', target: 6 },
-        { duration: '1m', target: 8 }, // beyond the breaking point
-        { duration: '5m', target: 8 },
-        { duration: '1m', target: 0 }, // scale down. Recovery stage.
+        { duration: durationGrowing, target: configVUs[2][0] }, // below normal load
+        { duration: durationSteady, target: configVUs[2][0] },
+        { duration: durationGrowing, target: configVUs[2][1] }, // normal load
+        { duration: durationSteady, target: configVUs[2][1] },
+        { duration: durationGrowing, target: configVUs[2][2] }, // around the breaking point
+        { duration: durationSteady, target: configVUs[2][2] },
+        { duration: durationGrowing, target: configVUs[2][3] }, // beyond the breaking point
+        { duration: durationSteady, target: configVUs[2][3] },
+        { duration: scaledown, target: 0 }, // scale down. Recovery stage.
       ],
       gracefulRampDown: '30s',
     },
@@ -229,6 +248,7 @@ export function registeredWriter() {
     });
     group('redirected to profile page', function() {
       const profilePage = http.get('http://localhost:3000/app/profile');
+      // console.log(JSON.stringify(profilePage, null, 2));
       check(profilePage, {
         'is status 200': (r) => r.status === 200,
       });
