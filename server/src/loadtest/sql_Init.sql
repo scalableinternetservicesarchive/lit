@@ -1,0 +1,47 @@
+-- Initialize MYSQL database
+delete from `bookmark` where id > 1;
+delete from `chapter` where id > 4;
+delete from `work` where id > 51;
+delete from `session`;
+delete from `user` where id > 71;
+-- reset migration
+delete from migration_schema_history where installed_rank >= 1;
+drop table bookmark;
+drop table session;
+drop table chapter;
+drop table work;
+drop table user;
+--
+insert into `user` (`email`, `userType`, `name`) values ('writer0@test.com', 'USER', 'Test Writer0');
+insert into `user` (`email`, `userType`, `name`) values ('writer1@test.com', 'USER', 'Test Writer1');
+insert into `user` (`email`, `userType`, `name`) values ('writer2@test.com', 'USER', 'Test Writer2');
+insert into `user` (`email`, `userType`, `name`) values ('writer3@test.com', 'USER', 'Test Writer3');
+insert into `user` (`email`, `userType`, `name`) values ('writer4@test.com', 'USER', 'Test Writer4');
+insert into `user` (`email`, `userType`, `name`) values ('writer5@test.com', 'USER', 'Test Writer5');
+insert into `user` (`email`, `userType`, `name`) values ('writer6@test.com', 'USER', 'Test Writer6');
+insert into `user` (`email`, `userType`, `name`) values ('writer7@test.com', 'USER', 'Test Writer7');
+insert into `user` (`email`, `userType`, `name`) values ('writer8@test.com', 'USER', 'Test Writer8');
+insert into `user` (`email`, `userType`, `name`) values ('writer9@test.com', 'USER', 'Test Writer9');
+insert into `user` (`email`, `userType`, `name`) values ('writer10@test.com', 'USER', 'Test Wwriter10');
+insert into `user` (`email`, `userType`, `name`) values ('writer11@test.com', 'USER', 'Test Writer11');
+insert into `user` (`email`, `userType`, `name`) values ('writer12@test.com', 'USER', 'Test Writer12');
+insert into `user` (`email`, `userType`, `name`) values ('writer13@test.com', 'USER', 'Test Writer13');
+insert into `user` (`email`, `userType`, `name`) values ('writer14@test.com', 'USER', 'Test Writer14');
+insert into `user` (`email`, `userType`, `name`) values ('writer15@test.com', 'USER', 'Test Writer15');
+insert into `user` (`email`, `userType`, `name`) values ('writer16@test.com', 'USER', 'Test Writer16');
+insert into `user` (`email`, `userType`, `name`) values ('writer17@test.com', 'USER', 'Test Writer17');
+insert into `user` (`email`, `userType`, `name`) values ('writer18@test.com', 'USER', 'Test Writer18');
+insert into `user` (`email`, `userType`, `name`) values ('writer19@test.com', 'USER', 'Test Writer19');
+insert into `user` (`email`, `userType`, `name`) values ('writer20@test.com', 'USER', 'Test Writer20');
+insert into `user` (`email`, `userType`, `name`) values ('writer21@test.com', 'USER', 'Test Writer21');
+insert into `user` (`email`, `userType`, `name`) values ('writer22@test.com', 'USER', 'Test Writer22');
+insert into `user` (`email`, `userType`, `name`) values ('writer23@test.com', 'USER', 'Test Writer23');
+insert into `user` (`email`, `userType`, `name`) values ('writer24@test.com', 'USER', 'Test Writer24');
+insert into `user` (`email`, `userType`, `name`) values ('writer25@test.com', 'USER', 'Test Writer25');
+insert into `user` (`email`, `userType`, `name`) values ('writer26@test.com', 'USER', 'Test Writer26');
+insert into `user` (`email`, `userType`, `name`) values ('writer27@test.com', 'USER', 'Test Writer27');
+insert into `user` (`email`, `userType`, `name`) values ('writer28@test.com', 'USER', 'Test Writer28');
+insert into `user` (`email`, `userType`, `name`) values ('writer29@test.com', 'USER', 'Test Writer29');
+insert into `user` (`email`, `userType`, `name`) values ('writer30@test.com', 'USER', 'Test Writer30');
+insert into `chapter` (`id`, `workID`, `title`, `text`) values (2, 1,'titletest', 'testtest');
+insert into `chapter` (`id`, `workID`, `title`, `text`) values (3, 1,'titletest', 'testtest');
