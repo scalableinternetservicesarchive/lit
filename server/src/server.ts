@@ -22,7 +22,7 @@ import { migrate } from './db/migrate'
 import { initORM } from './db/sql'
 import { Session } from './entities/Session'
 import { User } from './entities/User'
-import { getSchema, graphqlRoot, pubsub } from './graphql/api'
+import { getSchema, graphqlRoot, my_redis, pubsub } from './graphql/api'
 import { ConnectionManager } from './graphql/ConnectionManager'
 import { UserType } from './graphql/schema.types'
 import { expressLambdaProxy } from './lambda/handler'
@@ -31,7 +31,7 @@ import { renderApp } from './render'
 const server = new GraphQLServer({
   typeDefs: getSchema(),
   resolvers: graphqlRoot as any,
-  context: ctx => ({ ...ctx, pubsub, user: (ctx.request as any)?.user || null }),
+  context: ctx => ({ ...ctx, pubsub, redis: my_redis, user: (ctx.request as any)?.user || null, }),
 })
 
 server.express.use(cookieParser())
@@ -59,6 +59,11 @@ server.express.post(
   asyncRoute(async (req, res) => {
     console.log('POST /auth/createUser')
     // create User model with data from HTTP request
+
+    const prevUserID = await my_redis.scard("users")
+    await my_redis.sadd("users", prevUserID + 1)
+    await my_redis.hmset(`user:${prevUserID + 1}`, "id", prevUserID, "name", req.body.name, "email", req.body.email, "userType", UserType.User)
+
     let user = new User()
     user.email = req.body.email
     user.name = req.body.name

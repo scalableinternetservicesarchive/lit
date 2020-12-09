@@ -141,6 +141,8 @@ type Mutation {
   # Returns new work ID
   createWork(workUserID: Int!, workTitle: String!, workSummary: String!): Int
 
+  createUser(email: String!, name: String!): Int
+
   # Returns new chapter ID
   addChapter(workID: Int!, chapterTitle: String!, chapterText: String!): Int
 

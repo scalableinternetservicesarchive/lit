@@ -1,17 +1,18 @@
 /* eslint-disable prettier/prettier */
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
+import Redis from 'ioredis'
 import path from 'path'
 import { check } from '../../../common/src/util'
-import { Bookmark } from '../entities/Bookmark'
-import { Chapter } from '../entities/Chapter'
 import { Survey } from '../entities/Survey'
 import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 import { User } from '../entities/User'
 import { Work } from '../entities/Work'
-import { Resolvers } from './schema.types'
+import { Resolvers, UserType } from './schema.types'
+
 export const pubsub = new PubSub()
+export const my_redis = new Redis()
 
 export function getSchema() {
   const schema = readFileSync(path.join(__dirname, 'schema.graphql'))
@@ -22,29 +23,156 @@ interface Context {
   user: User | null
   request: Request
   response: Response
-  pubsub: PubSub
+  pubsub: PubSub,
+  redis: Redis.Redis
 }
 
 export const graphqlRoot: Resolvers<Context> = {
+  /*
+  Work: {
+    chapters: (parent, args, {redis}) => {
+      var result = new Array()
+      redis.smembers("")
+    }
+  },*/
+  User: {
+    works: async (parent, args, { redis }) => {
+      var result = await redis.smembers(`user:${parent.id}:works`)
+      let list: any[] = []
+      result.forEach(async id => {
+        const item = await redis.hgetall(`work:${id}`)
+        list.push(item)
+      })
+      return list
+    },
+    bookmarks: async (parent, args, { redis }) => {
+      var result = await redis.smembers(`user:${parent.id}:bookmarks`)
+      let list: any[] = []
+      result.forEach(async id => {
+        const item = await redis.hgetall(`bookmark:${id}`)
+        list.push(item)
+      })
+      return list
+    },
+    userType: async (parent, args, { redis }) => {
+      var result = await redis.hget(`user:${parent.id}`, "userType");
+      return result as UserType
+    }
+  },
+  Chapter: {
+    work: async (parent, args, { redis }) => {
+      var workID = await redis.hget(`chapter:${parent.id}`, "workID")
+      return await redis.hgetall(`work:${workID}`) as any
+    }
+  },
+  Work: {
+    chapters: async (parent, args, { redis }) => {
+      var result = await redis.smembers(`work:${parent.id}:chapters`)
+      let list: any[] = []
+      result.forEach(async chapId => {
+        const chap = await redis.hgetall(`chapter:${chapId}`)
+        list.push(chap)
+      })
+      return list
+    },
+    user: async (parent, args, { redis }) => {
+      var userID = await redis.hget(`work:${parent.id}`, "userID")
+      return await redis.hgetall(`user:${userID}`) as any
+    },
+    bookmarks: async (parent, args, { redis }) => {
+      var result = await redis.smembers(`work:${parent.id}:bookmarks`)
+      let list: any[] = []
+      result.forEach(async id => {
+        const item = await redis.hgetall(`bookmark:${id}`)
+        list.push(item)
+      })
+      return list
+    }
+  },
+  Bookmark: {
+    user: async (parent, args, { redis }) => {
+      var userID = await redis.hget(`bookmark:${parent.id}`, "userID")
+      return await redis.hgetall(`user:${userID}`) as any
+    },
+    work: async (parent, args, { redis }) => {
+      var workID = await redis.hget(`bookmark:${parent.id}`, "workID")
+      return await redis.hgetall(`work:${workID}`) as any
+    }
+  },
   Query: {
     self: (_, args, ctx) => ctx.user,
     survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
     surveys: () => Survey.find(),
-    user: async (_, { userID }) => (await User.findOne({ where: { id: userID } })) || null,
-    users: () => User.find(),
+    user: async (_, { userID }, { redis }) => {
+      return await redis.hgetall(`user:${userID}`) as any
+    },
+    users: async (_, args, { redis }) => {
+      const allUsers = await redis.smembers("users")
+      let list: any[] = []
+      allUsers.forEach(async id => {
+        const us = await redis.hgetall(`user:${id}`)
+        list.push(us)
+      })
+      return list
+    }
+    /*
+    {
+      var fetch = (callback: Function) => {
+        var results = new Array()
+        redis.smembers("users", function(err: any, users: any) {
+          if(users.length == 0) {
+            return User.find();
+          }
+          users.forEach(function(id) {
+            redis.hgetall(`user:${id}`, function(err: any, items: any) {
+
+            });
+          });
+        });
+      };
+      return fetch((results: any) => { return results; });
+    }*/,
     // the {workID} is specific to the parameter set within query type of schema.graphql. id is specific to the column name within the database created by Work.ts
     // TODO: ask why the following is the case? --> the following does not work anymore once I put the many-to-one relation inside the work.ts file
     // answer: you didn't run "npm run gen" after modifying the schema.graphql file. And usually the schema in the schema.graphql doesn't match the schema specified in the files of the entities folder if the schema.graphql doesn't seem to be the problem.
-    work: async (_, { workID }) => (await Work.findOne({ where: { id: workID }, relations: ['user'] })) || null,
+    work: async (_, { workID }, { redis }) => {
+      return await redis.hgetall(`work:${workID}`) as any
+    }
+    /*
+    {
+
+    }
+    */
+    ,
     // used to get the works for the search bar
     targetWorks: async (_, { targetWork }) => (await Work.find({
       where: { title: targetWork },
       relations: ['user']
     })) || null,
     // used to get all the works
-    works: () => Work.find({ relations: ['user'] }),
-    bookmark: async (_, { bookmarkID }) => (await Bookmark.findOne({ where: { id: bookmarkID }, relations: ['user', 'work'] })) || null,
-    bookmarks: () => Bookmark.find({ relations: ['user', 'work'] }),
+    works: async (_, args, { redis }) => {
+      const allWorks = await redis.smembers("works")
+      let list: any[] = []
+      allWorks.forEach(async workId => {
+        const work = await redis.hgetall(`work:${workId}`)
+        list.push(work)
+      })
+      return list
+
+    },
+    bookmark: async (_, { bookmarkID }, { redis }) => {
+      return await redis.hgetall(`bookmark:${bookmarkID}`) as any
+    },
+    bookmarks: async (_, args, { redis }) => {
+      const allBookmarks = await redis.smembers("bookmarks")
+      let list: any[] = []
+      allBookmarks.forEach(async bookmarkId => {
+        const bookmark = await redis.hgetall(`bookmark:${bookmarkId}`)
+        list.push(bookmark)
+      })
+      return list
+    }
+    ,
 
     // TODO: tried executing the following, but it wouldn't work. It would work if I took out the "user {...},". How can we query user from work?
     // This is important because we need to learn how to access the user from the work
@@ -70,7 +198,26 @@ export const graphqlRoot: Resolvers<Context> = {
     //     },
     //   }
     // }
-    chapter: async (_, { chID }) => (await Chapter.findOne({ where: { id: chID } })) || null,
+    chapter: async (_, { chID }, { redis }) => //(await Chapter.findOne({ where: { id: chID } })) || null,
+    {
+      return await redis.hgetall(`chapter:${chID}`) as any
+      /*
+      if (ch != null) {
+        const wk = await redis.hgetall(`work:${Number(ch.work)}`);
+        const parentWork = {
+          id: Number(wk.id)
+        };
+        const result = {
+          id: Number(ch.id),
+          title: String(ch.title),
+          text: String(ch.text),
+          work: parentWork as Work
+        };
+        return result as Chapter;
+      }
+      */
+    },
+
     // if you want to query work info within a chapter query, then you need to add in ", relations: ['work']"
   }, // select * from chapter where chapterID = <user input>
   Mutation: {
@@ -96,48 +243,53 @@ export const graphqlRoot: Resolvers<Context> = {
       ctx.pubsub.publish('SURVEY_UPDATE_' + surveyId, survey)
       return survey
     },
-    updateSummary: async (_, { input }, ctx) => {
+    updateSummary: async (_, { input }, { redis }) => {
       const { summary, workID } = input
-      const targetWork = check(await Work.findOne({ where: { id: workID } }))
-      var newWork = targetWork
-      newWork.summary = summary
-      await newWork.save()
-
+      await redis.hset(`work:${workID}`, "summary", summary)
       return true
     },
-    updateChapter: async (_, { input }, ctx) => {
+    updateChapter: async (_, { input }, { redis }) => {
       const { title, text, chapterID } = input
-      const targetChapter = check(await Chapter.findOne({ where: { id: chapterID } }))
-      var newChapter = targetChapter
-      newChapter.title = title
-      newChapter.text = text
-      await newChapter.save()
-
+      await redis.hmset(`chapter:${chapterID}`, "title", title, "text", text)
       return true
     },
-    createWork: async (_, { workUserID, workTitle, workSummary }, ctx) => {
-      const work = new Work()
-      const author = check(await User.findOne({ where: { id: workUserID } }))
-      work.user = author
-      work.title = workTitle
-      work.summary = workSummary
-      work.timeCreated = new Date()
-      await work.save()
-      return work.id
+    createWork: async (_, { workUserID, workTitle, workSummary }, { redis }) => {
+      const authorID = await redis.hget(`user:${workUserID}`, "id")
+      if (authorID) {
+        const newWorkID = await redis.scard("works")
+        await redis.sadd("works", newWorkID + 1)
+        await redis.hmset(`work:${newWorkID + 1}`, "id", newWorkID + 1, "title", workTitle, "summary", workSummary, "userID", authorID)
+        await redis.sadd(`user:${workUserID}:works`, newWorkID + 1)
+        return newWorkID + 1
+      } else {
+        return 0
+      }
     },
-    addChapter: async (_, { workID, chapterTitle, chapterText }, ctx) => {
-      const parentWork = check(await Work.findOne({ where: { id: workID } }))
-      parentWork.timeUpdated = new Date()
-      const chapter = new Chapter()
-      chapter.work = parentWork
-      chapter.title = chapterTitle
-      chapter.text = chapterText
-      chapter.timeCreated = new Date()
-      await parentWork.save()
-      await chapter.save()
-      return chapter.id
+    createUser: async (_, { email, name }, { redis }) => {
+      const prevUserID = await redis.scard("users")
+      await redis.set("prevUser", prevUserID)
+      await redis.incrby("prevUser", 1)
+      const UserID = await redis.get("prevUser") as string
+      await redis.sadd("users", UserID)
+      await redis.hmset(`user:${UserID}`, "id", UserID, "name", name, "email", email, "userType", UserType.User)
+      return Number(UserID)
     },
-    createBookmark: async (_, { userID, workID }, ctx) => {
+    addChapter: async (_, { workID, chapterTitle, chapterText }, { redis }) => {
+      const pworkID = await redis.hget(`work:${workID}`, "id")
+      if (pworkID) {
+        const prevchID = await redis.scard("chapters")
+        await redis.set("prevChapter", prevchID)
+        await redis.incrby("prevChapter", 1)
+        const chID = await redis.get("prevChapter")
+        await redis.sadd("chapters", `chapter:${chID}`)
+        await redis.hmset(`chapter:${chID}`, "id", String(chID), "title", chapterTitle, "text", chapterText, "workID", workID);
+        await redis.hmset(`work:${workID}:chapters`, String(chID))
+        return Number(chID)
+      } else {
+        return 0
+      }
+    },
+    createBookmark: async (_, { userID, workID }, { redis }) => {
       // const bookmarkCheck  = await Bookmark.findOne ({where: { userId: userID, workId: workID }, relations: ['user', 'work']}) || null
       // get the possible owner of bookmark
       // const bookmarkOwnerCheck = await User.findOne({ where: { id: userID }, relations: ['works'] }) || null
@@ -171,40 +323,55 @@ export const graphqlRoot: Resolvers<Context> = {
       // console.log (bookmarks)
 
 
-      // get the work that we want to add the bookmark to
-      const workBookmarked = check(await Work.findOne({ where: { id: workID } }))
-      // get the owner of the bookmark
-      const bookmarkOwner = check(await User.findOne({ where: { id: userID } }))
-      // create a new bookmark
-      const bookmark = new Bookmark()
-      // assign the user to the bookmark
-      bookmark.user = bookmarkOwner
-      // assign the work to the bookmark
-      bookmark.work = workBookmarked
 
-      await bookmark.save()
-      return bookmark.id
-    },
-    deleteBookmark: async (_, { bookmarkID }) => {
-      const bookmark = check(await Bookmark.findOne({ where: { id: bookmarkID } }))
-      await bookmark.remove()
 
-      return true
-    },
-    deleteWork: async (_, { workID }) => {
-      const targetWork = check(await Work.findOne({ where: { id: workID } }))
-      const targetChapters = check(await Chapter.find({ where: { work: targetWork } }))
-      //delete all related chapters first
-      for (const chapter of targetChapters) {
-        await chapter.remove()
+
+      const pworkID = await redis.hget(`work:${workID}`, "id")
+      const user_ID = await redis.hget(`user:${userID}`, "id")
+      if (pworkID && user_ID) {
+        const newbID = await redis.scard("bookmarks")
+        await redis.sadd("bookmarks", newbID + 1)
+        await redis.hmset(`bookmark:${newbID + 1}`, "id", newbID + 1, "userID", userID, "workID", workID)
+        await redis.sadd(`user:${userID}:bookmarks`, newbID + 1)
+        await redis.sadd(`work:${workID}:bookmarks`, newbID + 1)
+        return newbID + 1
+      } else {
+        return 0
       }
-      //delete the work
-      await targetWork.remove()
+    },
+    deleteBookmark: async (_, { bookmarkID }, { redis }) => {
+      const userID = await redis.hget(`bookmark:${bookmarkID}`, "userID")
+      const workID = await redis.hget(`bookmark:${bookmarkID}`, "workID")
+      await redis.del(`bookmark:${bookmarkID}`)
+      await redis.srem(`user:${userID}:bookmarks`, bookmarkID)
+      await redis.srem(`work:${workID}:bookmarks`, bookmarkID)
       return true
     },
-    deleteChapter: async (_, { chID }) => {
-      const targetChapter = check(await Chapter.findOne({ where: { id: chID } }))
-      await targetChapter.remove()
+    deleteWork: async (_, { workID }, { redis }) => {
+
+      const userID = await redis.hget(`work:${workID}`, "userID")
+      var result = await redis.smembers(`work:${workID}:chapters`)
+      result.forEach(async chapId => {
+        await redis.srem("chapters", chapId)
+      })
+      var res = await redis.smembers(`work:${workID}:bookmarks`)
+      res.forEach(async bId => {
+        const userID = await redis.hget(`bookmark:${bId}`, "userID")
+        await redis.srem(`user:${userID}:bookmarks`, bId)
+        await redis.srem("bookmarks", bId)
+        await redis.del(`bookmark:${bId}`)
+      })
+      await redis.srem(`user:${userID}:works`, workID)
+      await redis.del(`work:${workID}:chapters`)
+      await redis.del(`work:${workID}`)
+      await redis.srem("works", workID)
+      return true
+    },
+    deleteChapter: async (_, { chID }, { redis }) => {
+      const workID = await redis.hget(`chapter:${chID}`, "workID")
+      await redis.srem(`work:${workID}:chapters`, chID)
+      await redis.del(`chapter:${chID}`)
+      await redis.srem("chapters", chID)
       return true
     },
   },
