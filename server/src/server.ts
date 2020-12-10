@@ -266,6 +266,15 @@ server.express.post(
 
 initORM()
   .then(() => migrate())
+  .then(async () => {
+    /*
+    await my_redis.del("users")
+    await my_redis.del("works")
+    await my_redis.del("bookmarks")
+    await my_redis.del("chapters")
+    */
+    await my_redis.flushall()
+  })
   .then(() =>
     server.start(
       {

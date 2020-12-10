@@ -9,7 +9,7 @@ import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 import { User } from '../entities/User'
 import { Work } from '../entities/Work'
-import { Resolvers, UserType } from './schema.types'
+import { Bookmark, Chapter, Resolvers, UserType } from './schema.types'
 
 export const pubsub = new PubSub()
 export const my_redis = new Redis()
@@ -38,20 +38,20 @@ export const graphqlRoot: Resolvers<Context> = {
   User: {
     works: async (parent, args, { redis }) => {
       var result = await redis.smembers(`user:${parent.id}:works`)
-      let list: any[] = []
-      result.forEach(async id => {
-        const item = await redis.hgetall(`work:${id}`)
-        list.push(item)
-      })
+      let list: Work[] = []
+      for (let id in result) {
+        const item = await redis.hgetall(`work:${result[id]}`)
+        list.push(item as any)
+      }
       return list
     },
     bookmarks: async (parent, args, { redis }) => {
       var result = await redis.smembers(`user:${parent.id}:bookmarks`)
-      let list: any[] = []
-      result.forEach(async id => {
-        const item = await redis.hgetall(`bookmark:${id}`)
-        list.push(item)
-      })
+      let list: Bookmark[] = []
+      for (let id in result) {
+        const item = await redis.hgetall(`bookmark:${result[id]}`)
+        list.push(item as any)
+      }
       return list
     },
     userType: async (parent, args, { redis }) => {
@@ -65,14 +65,16 @@ export const graphqlRoot: Resolvers<Context> = {
       return await redis.hgetall(`work:${workID}`) as any
     }
   },
+
   Work: {
     chapters: async (parent, args, { redis }) => {
       var result = await redis.smembers(`work:${parent.id}:chapters`)
-      let list: any[] = []
-      result.forEach(async chapId => {
-        const chap = await redis.hgetall(`chapter:${chapId}`)
-        list.push(chap)
-      })
+      console.log(result)
+      let list: Chapter[] = []
+      for (let id in result) {
+        const chap = await redis.hgetall(`chapter:${result[id]}`)
+        list.push(chap as any)
+      }
       return list
     },
     user: async (parent, args, { redis }) => {
@@ -81,11 +83,12 @@ export const graphqlRoot: Resolvers<Context> = {
     },
     bookmarks: async (parent, args, { redis }) => {
       var result = await redis.smembers(`work:${parent.id}:bookmarks`)
-      let list: any[] = []
-      result.forEach(async id => {
-        const item = await redis.hgetall(`bookmark:${id}`)
-        list.push(item)
-      })
+      console.log(result)
+      let list: Bookmark[] = []
+      for (let id in result) {
+        const item = await redis.hgetall(`bookmark:${result[id]}`)
+        list.push(item as any)
+      }
       return list
     }
   },
@@ -104,15 +107,35 @@ export const graphqlRoot: Resolvers<Context> = {
     survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
     surveys: () => Survey.find(),
     user: async (_, { userID }, { redis }) => {
-      return await redis.hgetall(`user:${userID}`) as any
+      const u = await redis.hgetall(`user:${userID}`) as any
+      /*
+      if (u == null) {
+        return await User.findOne({ where: { id: userID } }) || null
+      }
+      */
+      return u
     },
     users: async (_, args, { redis }) => {
-      const allUsers = await redis.smembers("users")
-      let list: any[] = []
-      allUsers.forEach(async id => {
-        const us = await redis.hgetall(`user:${id}`)
-        list.push(us)
-      })
+      const result = await redis.smembers("users")
+      console.log(result)
+
+      let list: User[] = []
+      for (let id in result) {
+        const item = await redis.hgetall(`user:${result[id]}`)
+        console.log(item.name)
+        /*
+        const result = {
+          id: Number(work.id),
+          title: work.title,
+          summary: work.summary
+        }
+        list.push(result as any)
+        */
+
+        list.push(item as any)
+
+
+      }
       return list
     }
     /*
@@ -152,11 +175,22 @@ export const graphqlRoot: Resolvers<Context> = {
     // used to get all the works
     works: async (_, args, { redis }) => {
       const allWorks = await redis.smembers("works")
-      let list: any[] = []
-      allWorks.forEach(async workId => {
-        const work = await redis.hgetall(`work:${workId}`)
-        list.push(work)
-      })
+      console.log(allWorks)
+
+      let list: Work[] = []
+      for (let id in allWorks) {
+        const work = await redis.hgetall(`work:${allWorks[id]}`)
+        console.log(work.title)
+        /*
+        const result = {
+          id: Number(work.id),
+          title: work.title,
+          summary: work.summary
+        }
+        list.push(result as any)
+        */
+        list.push(work as any)
+      }
       return list
 
     },
@@ -164,12 +198,12 @@ export const graphqlRoot: Resolvers<Context> = {
       return await redis.hgetall(`bookmark:${bookmarkID}`) as any
     },
     bookmarks: async (_, args, { redis }) => {
-      const allBookmarks = await redis.smembers("bookmarks")
-      let list: any[] = []
-      allBookmarks.forEach(async bookmarkId => {
-        const bookmark = await redis.hgetall(`bookmark:${bookmarkId}`)
-        list.push(bookmark)
-      })
+      const result = await redis.smembers("bookmarks")
+      let list: Bookmark[] = []
+      for (let id in result) {
+        const bookmark = await redis.hgetall(`bookmark:${result[id]}`)
+        list.push(bookmark as any)
+      }
       return list
     }
     ,
@@ -256,11 +290,23 @@ export const graphqlRoot: Resolvers<Context> = {
     createWork: async (_, { workUserID, workTitle, workSummary }, { redis }) => {
       const authorID = await redis.hget(`user:${workUserID}`, "id")
       if (authorID) {
-        const newWorkID = await redis.scard("works")
-        await redis.sadd("works", newWorkID + 1)
-        await redis.hmset(`work:${newWorkID + 1}`, "id", newWorkID + 1, "title", workTitle, "summary", workSummary, "userID", authorID)
-        await redis.sadd(`user:${workUserID}:works`, newWorkID + 1)
-        return newWorkID + 1
+        const prevWorkID = await redis.scard("works")
+        await redis.set("prevWork", prevWorkID)
+        await redis.incrby("prevWork", 1)
+        const newWID = await redis.get("prevWork") as string
+        const outcome = await redis.sadd("works", newWID)
+        let newWorkID = newWID
+        let fail = outcome
+        while (fail == 0) {
+          await redis.incrby("prevWork", 1)
+          const newWork = await redis.get("prevWork") as string
+          newWorkID = newWork
+          const out = await redis.sadd("works", newWork)
+          fail = out
+        }
+        await redis.hmset(`work:${newWorkID}`, "id", newWorkID, "title", workTitle, "summary", workSummary, "userID", workUserID)
+        await redis.sadd(`user:${workUserID}:works`, newWorkID)
+        return Number(newWorkID)
       } else {
         return 0
       }
@@ -269,9 +315,18 @@ export const graphqlRoot: Resolvers<Context> = {
       const prevUserID = await redis.scard("users")
       await redis.set("prevUser", prevUserID)
       await redis.incrby("prevUser", 1)
-      const UserID = await redis.get("prevUser") as string
-      await redis.sadd("users", UserID)
-      await redis.hmset(`user:${UserID}`, "id", UserID, "name", name, "email", email, "userType", UserType.User)
+      const newUserID = await redis.get("prevUser") as string
+      const outcome = await redis.sadd("prevUser", newUserID)
+      let UserID = newUserID
+      let fail = outcome
+      while (fail == 0) {
+        await redis.incrby("prevUser", 1)
+        const newUser = await redis.get("prevUser") as string
+        UserID = newUser
+        const out = await redis.sadd("users", newUser)
+        fail = out
+      }
+      await redis.hmset(`user:${UserID}`, "id", UserID, "name", name, "email", email, "userType", "USER")
       return Number(UserID)
     },
     addChapter: async (_, { workID, chapterTitle, chapterText }, { redis }) => {
@@ -280,10 +335,19 @@ export const graphqlRoot: Resolvers<Context> = {
         const prevchID = await redis.scard("chapters")
         await redis.set("prevChapter", prevchID)
         await redis.incrby("prevChapter", 1)
-        const chID = await redis.get("prevChapter")
-        await redis.sadd("chapters", `chapter:${chID}`)
+        const newCHID = await redis.get("prevChapter") as string
+        const outcome = await redis.sadd("chapters", newCHID)
+        let chID = newCHID
+        let fail = outcome
+        while (fail == 0) {
+          await redis.incrby("prevUser", 1)
+          const newCh = await redis.get("prevChapter") as string
+          chID = newCh
+          const out = await redis.sadd("chapters", newCh)
+          fail = out
+        }
         await redis.hmset(`chapter:${chID}`, "id", String(chID), "title", chapterTitle, "text", chapterText, "workID", workID);
-        await redis.hmset(`work:${workID}:chapters`, String(chID))
+        await redis.sadd(`work:${workID}:chapters`, String(chID))
         return Number(chID)
       } else {
         return 0
@@ -329,12 +393,25 @@ export const graphqlRoot: Resolvers<Context> = {
       const pworkID = await redis.hget(`work:${workID}`, "id")
       const user_ID = await redis.hget(`user:${userID}`, "id")
       if (pworkID && user_ID) {
-        const newbID = await redis.scard("bookmarks")
-        await redis.sadd("bookmarks", newbID + 1)
-        await redis.hmset(`bookmark:${newbID + 1}`, "id", newbID + 1, "userID", userID, "workID", workID)
-        await redis.sadd(`user:${userID}:bookmarks`, newbID + 1)
-        await redis.sadd(`work:${workID}:bookmarks`, newbID + 1)
-        return newbID + 1
+        const prevbID = await redis.scard("bookmarks")
+        await redis.set("prevBookmark", prevbID)
+        await redis.incrby("prevBookmark", 1)
+        const newBookID = await redis.get("prevBookmark") as string
+        const outcome = await redis.sadd("bookmarks", newBookID)
+        let newbID = newBookID
+        let fail = outcome
+        while (fail == 0) {
+          await redis.incrby("prevBookmark", 1)
+          const newBookmark = await redis.get("prevBookmark") as string
+          newbID = newBookmark
+          const out = await redis.sadd("bookmarks", newBookmark)
+          fail = out
+        }
+
+        await redis.hmset(`bookmark:${newbID}`, "id", newbID, "userID", userID, "workID", workID)
+        await redis.sadd(`user:${userID}:bookmarks`, newbID)
+        await redis.sadd(`work:${workID}:bookmarks`, newbID)
+        return Number(newbID)
       } else {
         return 0
       }
@@ -345,6 +422,7 @@ export const graphqlRoot: Resolvers<Context> = {
       await redis.del(`bookmark:${bookmarkID}`)
       await redis.srem(`user:${userID}:bookmarks`, bookmarkID)
       await redis.srem(`work:${workID}:bookmarks`, bookmarkID)
+      await redis.srem("bookmarks", bookmarkID)
       return true
     },
     deleteWork: async (_, { workID }, { redis }) => {
