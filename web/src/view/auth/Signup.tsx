@@ -4,7 +4,6 @@ import { check } from '../../../../common/src/util'
 import { Button } from '../../style/button'
 import { Input } from '../../style/input'
 import { toastErr } from '../toast/toast'
-
 export function Signup() {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')

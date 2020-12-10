@@ -107,6 +107,10 @@ export const graphqlRoot: Resolvers<Context> = {
     survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
     surveys: () => Survey.find(),
     user: async (_, { userID }, { redis }) => {
+      const ur = await redis.hgetall(`user:${userID}`)
+      await redis.set(`email:${ur.email}`, ur.id)
+      return ur as any
+      /*
       const u = await redis.hgetall(`user:${userID}`) as any
       if (u == null) {
         return await User.findOne({ where: { id: userID } }).then(async (result) => {
@@ -118,6 +122,7 @@ export const graphqlRoot: Resolvers<Context> = {
       } else {
         return u
       }
+      */
     },
     users: async (_, args, { redis }) => {
       const result = await redis.smembers("users")
@@ -127,6 +132,7 @@ export const graphqlRoot: Resolvers<Context> = {
       let list: User[] = []
       for (let id in result) {
         const item = await redis.hgetall(`user:${result[id]}`)
+        await redis.set(`email:${item.email}`, item.id)
         console.log(item.name)
         /*
         const result = {
@@ -329,6 +335,7 @@ export const graphqlRoot: Resolvers<Context> = {
         const out = await redis.sadd("users", newUser)
         fail = out
       }
+      await redis.set(`email:${email}`, UserID)
       await redis.hmset(`user:${UserID}`, "id", UserID, "name", name, "email", email, "userType", "USER")
       return Number(UserID)
     },
@@ -343,7 +350,7 @@ export const graphqlRoot: Resolvers<Context> = {
         let chID = newCHID
         let fail = outcome
         while (fail == 0) {
-          await redis.incrby("prevUser", 1)
+          await redis.incrby("prevChapter", 1)
           const newCh = await redis.get("prevChapter") as string
           chID = newCh
           const out = await redis.sadd("chapters", newCh)

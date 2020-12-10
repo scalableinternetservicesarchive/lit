@@ -24,7 +24,6 @@ import { Session } from './entities/Session'
 import { User } from './entities/User'
 import { getSchema, graphqlRoot, my_redis, pubsub } from './graphql/api'
 import { ConnectionManager } from './graphql/ConnectionManager'
-import { UserType } from './graphql/schema.types'
 import { expressLambdaProxy } from './lambda/handler'
 import { renderApp } from './render'
 
@@ -60,21 +59,26 @@ server.express.post(
     console.log('POST /auth/createUser')
     // create User model with data from HTTP request
 
-    /*
+
     const prevUserID = await my_redis.scard("users")
-    await my_redis.sadd("users", prevUserID + 1)
-    await my_redis.hmset(`user:${prevUserID + 1}`, "id", prevUserID, "name", req.body.name, "email", req.body.email, "userType", UserType.User)
-    */
+    await my_redis.set("prevUser", prevUserID)
+    await my_redis.incrby("prevUser", 1)
+    const newUserID = await my_redis.get("prevUser") as string
+    const outcome = await my_redis.sadd("users", newUserID)
+    let UserID = newUserID
+    let fail = outcome
+    while (fail == 0) {
+      await my_redis.incrby("prevUser", 1)
+      const newUser = await my_redis.get("prevUser") as string
+      UserID = newUser
+      const out = await my_redis.sadd("users", newUser)
+      fail = out
+    }
+    await my_redis.hmset(`user:${UserID}`, "id", UserID, "name", req.body.name, "email", req.body.email, "userType", "USER")
 
-    let user = new User()
-    user.email = req.body.email
-    user.name = req.body.name
-    user.userType = UserType.User
+    const user = await my_redis.hgetall(`user:${UserID}`)
 
-    // save the User model to the database, refresh `user` to get ID
-    user = await user.save()
-
-    const authToken = await createSession(user)
+    const authToken = await createSession(user as any)
     res
       .status(200)
       .cookie('authToken', authToken, { maxAge: SESSION_DURATION, path: '/', httpOnly: true, secure: Config.isProd })
@@ -89,14 +93,15 @@ server.express.post(
     const email = req.body.email
     const password = req.body.password
 
-    const user = await User.findOne({ where: { email } })
-    if (!user || password !== Config.adminPassword) {
+    const userID = my_redis.get(`email:${email}`)
+
+    if (!userID || password !== Config.adminPassword) {
       res.status(403).send('Forbidden')
       return
     }
 
     // const authToken = uuidv4()
-
+    const user = await my_redis.hgetall(`user:${userID}`)
     await Session.delete({ user })
 
     // const session = new Session()
@@ -105,7 +110,7 @@ server.express.post(
     // await Session.save(session).then(s => console.log('saved session ' + s.id))
 
     // const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
-    const authToken = await createSession(user)
+    const authToken = await createSession(user as any)
     res
       .status(200)
       .cookie('authToken', authToken, { maxAge: SESSION_DURATION, path: '/', httpOnly: true, secure: Config.isProd })
@@ -275,7 +280,7 @@ initORM()
     await my_redis.del("bookmarks")
     await my_redis.del("chapters")
     */
-    //await my_redis.flushall()
+    await my_redis.flushall()
   })
   .then(() =>
     server.start(
