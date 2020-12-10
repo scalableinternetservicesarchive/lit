@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import Redis from 'ioredis'
@@ -108,15 +108,20 @@ export const graphqlRoot: Resolvers<Context> = {
     surveys: () => Survey.find(),
     user: async (_, { userID }, { redis }) => {
       const u = await redis.hgetall(`user:${userID}`) as any
-      /*
       if (u == null) {
-        return await User.findOne({ where: { id: userID } }) || null
+        return await User.findOne({ where: { id: userID } }).then(async (result) => {
+          if (result) {
+            await redis.hmset(`user:${result.id}`, "id", result.id, "name", result.name, "email", result.email, "userType", String(result.userType))
+            await redis.sadd("users", result.id)
+          }
+        }) || null
+      } else {
+        return u
       }
-      */
-      return u
     },
     users: async (_, args, { redis }) => {
       const result = await redis.smembers("users")
+
       console.log(result)
 
       let list: User[] = []
@@ -148,7 +153,6 @@ export const graphqlRoot: Resolvers<Context> = {
           }
           users.forEach(function(id) {
             redis.hgetall(`user:${id}`, function(err: any, items: any) {
-
             });
           });
         });
@@ -163,7 +167,6 @@ export const graphqlRoot: Resolvers<Context> = {
     }
     /*
     {
-
     }
     */
     ,
@@ -316,7 +319,7 @@ export const graphqlRoot: Resolvers<Context> = {
       await redis.set("prevUser", prevUserID)
       await redis.incrby("prevUser", 1)
       const newUserID = await redis.get("prevUser") as string
-      const outcome = await redis.sadd("prevUser", newUserID)
+      const outcome = await redis.sadd("users", newUserID)
       let UserID = newUserID
       let fail = outcome
       while (fail == 0) {
@@ -460,3 +463,6 @@ export const graphqlRoot: Resolvers<Context> = {
     },
   },
 }
+
+
+

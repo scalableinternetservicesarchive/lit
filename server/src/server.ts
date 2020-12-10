@@ -60,9 +60,11 @@ server.express.post(
     console.log('POST /auth/createUser')
     // create User model with data from HTTP request
 
+    /*
     const prevUserID = await my_redis.scard("users")
     await my_redis.sadd("users", prevUserID + 1)
     await my_redis.hmset(`user:${prevUserID + 1}`, "id", prevUserID, "name", req.body.name, "email", req.body.email, "userType", UserType.User)
+    */
 
     let user = new User()
     user.email = req.body.email
@@ -273,7 +275,7 @@ initORM()
     await my_redis.del("bookmarks")
     await my_redis.del("chapters")
     */
-    await my_redis.flushall()
+    //await my_redis.flushall()
   })
   .then(() =>
     server.start(
