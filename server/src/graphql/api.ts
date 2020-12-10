@@ -340,28 +340,28 @@ export const graphqlRoot: Resolvers<Context> = {
       return Number(UserID)
     },
     addChapter: async (_, { workID, chapterTitle, chapterText }, { redis }) => {
-      const pworkID = await redis.hget(`work:${workID}`, "id")
-      if (pworkID) {
-        const prevchID = await redis.scard("chapters")
-        await redis.set("prevChapter", prevchID)
+      //const pworkID = await redis.hget(`work:${workID}`, "id")
+      //if (pworkID) {
+      const prevchID = await redis.scard("chapters")
+      await redis.set("prevChapter", prevchID)
+      await redis.incrby("prevChapter", 1)
+      const newCHID = await redis.get("prevChapter") as string
+      const outcome = await redis.sadd("chapters", newCHID)
+      let chID = newCHID
+      let fail = outcome
+      while (fail == 0) {
         await redis.incrby("prevChapter", 1)
-        const newCHID = await redis.get("prevChapter") as string
-        const outcome = await redis.sadd("chapters", newCHID)
-        let chID = newCHID
-        let fail = outcome
-        while (fail == 0) {
-          await redis.incrby("prevChapter", 1)
-          const newCh = await redis.get("prevChapter") as string
-          chID = newCh
-          const out = await redis.sadd("chapters", newCh)
-          fail = out
-        }
-        await redis.hmset(`chapter:${chID}`, "id", String(chID), "title", chapterTitle, "text", chapterText, "workID", workID);
-        await redis.sadd(`work:${workID}:chapters`, String(chID))
-        return Number(chID)
-      } else {
-        return 0
+        const newCh = await redis.get("prevChapter") as string
+        chID = newCh
+        const out = await redis.sadd("chapters", newCh)
+        fail = out
       }
+      await redis.hmset(`chapter:${chID}`, "id", String(chID), "title", chapterTitle, "text", chapterText, "workID", workID);
+      await redis.sadd(`work:${workID}:chapters`, String(chID))
+      return Number(chID)
+      //} else {
+      // return 0
+      //}
     },
     createBookmark: async (_, { userID, workID }, { redis }) => {
       // const bookmarkCheck  = await Bookmark.findOne ({where: { userId: userID, workId: workID }, relations: ['user', 'work']}) || null
