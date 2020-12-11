@@ -1,1 +1,10 @@
-insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'John Rothfels');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Gojo');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Bakugo');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Eren');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Tsukki');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Kageyama');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Asta');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Kita Shinsuke');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Noelle');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Yuno');
+insert into `user` (`email`, `userType`, `name`) values ('rothfels@cs.ucla.edu', 'ADMIN', 'Kenma');
